@@ -1,0 +1,445 @@
+ 
+ Kick Assembler plugin - An Eclipse plugin for convenient Kick Assembling
+ Copyright (c) 2012 - P-a Backstrom <p-a>
+ 
+ Based on ASMPlugin - http://sourceforge.net/projects/asmplugin/
+ Copyright (c) 2006 - Andy Reek, D. Mitte
+ 
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+CHANGELOG:
+------------------------------------------------------------------------------ 
+
+2012-05-08  P-a Backstrom <p-a>:
+
+	* src/org/lyllo/kickassplugin/KickAssemblerBuilder.java: added TODO
+
+2012-05-08  P-a Backstrom <p-a>:
+
+	* META-INF/MANIFEST.MF, asm_instruction_set.xml, build.properties,
+	src/org/lyllo/kickassplugin/Activator.java,
+	src/org/lyllo/kickassplugin/Constants.java,
+	src/org/lyllo/kickassplugin/KickAssLauncher.java,
+	src/org/lyllo/kickassplugin/KickAssemblerBuilder.java,
+	src/org/lyllo/kickassplugin/KickAssemblerNature.java,
+	src/org/lyllo/kickassplugin/Messages.java,
+	src/org/lyllo/kickassplugin/SimpleExecutor.java,
+	src/org/lyllo/kickassplugin/TextAttributeConverter.java,
+	src/org/lyllo/kickassplugin/editor/ASMCodeScanner.java,
+	src/org/lyllo/kickassplugin/editor/ASMCompletionProcessor.java,
+	src/org/lyllo/kickassplugin/editor/ASMContentOutlinePage.java,
+	src/org/lyllo/kickassplugin/editor/ASMEditor.java,
+	src/org/lyllo/kickassplugin/editor/ASMInstructionSet.java,
+	src/org/lyllo/kickassplugin/editor/ASMLabelProvider.java,
+	src/org/lyllo/kickassplugin/editor/ASMPartitionScanner.java,
+	src/org/lyllo/kickassplugin/editor/ASMReconcilingStategy.java,
+	src/org/lyllo/kickassplugin/editor/ASMSourceViewerConfiguration.jav
+	a,
+	src/org/lyllo/kickassplugin/editor/PropertyChangeRuleBaseScanner.ja
+	va, src/org/lyllo/kickassplugin/editor/ToggleCommentAction.java,
+	src/org/lyllo/kickassplugin/editor/TreeObject.java,
+	src/org/lyllo/kickassplugin/editor/WordRuleCaseInsensitive.java,
+	src/org/lyllo/kickassplugin/launch/ASMLaunchShortcut.java,
+	src/org/lyllo/kickassplugin/launch/ASMLaunchTabGroup.java,
+	src/org/lyllo/kickassplugin/launch/ASMLauncher.java,
+	src/org/lyllo/kickassplugin/launch/ArgumentsTab.java,
+	src/org/lyllo/kickassplugin/launch/MainTab.java,
+	src/org/lyllo/kickassplugin/ui/AsciiAction.java,
+	src/org/lyllo/kickassplugin/ui/AsciiDialog.java,
+	src/org/lyllo/kickassplugin/ui/MultiLineStringFieldEditor.java,
+	src/org/lyllo/kickassplugin/ui/OutputConsole.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesCompiler.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesDebugger.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesGeneral.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesTemplates.java,
+	src/org/lyllo/kickassplugin/ui/TemplateFileWizardPage.java,
+	src/org/lyllo/kickassplugin/ui/WizardNewFile.java,
+	src/org/lyllo/kickassplugin/ui/WizardNewProject.java: Added
+	GPL-license headers to all sources
+
+2012-05-07  P-a Backstrom <p-a>:
+
+	* plugin.xml, src/org/lyllo/kickassplugin/Activator.java,
+	templates/COM Program (NASM, DOS).txt, templates/COM Program (TASM,
+	DOS).txt, templates/Hello World (NASM, DOS).txt, templates/Hello
+	World (NASM, Linux).txt, templates/Hello World (TASM, DOS).txt,
+	templates/Simple Program (NASM, DOS).txt, templates/Simple Program
+	(NASM, Linux).txt, templates/Simple Program (TASM, DOS).txt: removed
+	generic templates. Added basicupstart template for Kick
+
+2012-05-07  P-a Backstrom <p-a>:
+
+	* plugin.xml: revert s/ASM/KickAssembler/
+
+2012-05-07  P-a Backstrom <p-a>:
+
+	* src/org/lyllo/kickassplugin/editor/ASMContentOutlinePage.java: 
+	Changed order in outline
+
+2012-05-07  P-a Backstrom <p-a>:
+
+	* about.html: fixed typos
+
+2012-05-07  P-a Backstrom <p-a>:
+
+	* doc/de_about.html, doc/de_asm_editor.html, doc/de_asm_file.html,
+	doc/de_asm_project.html, doc/de_extend_asm_examples.html,
+	doc/de_extend_asm_instruction.html,
+	doc/de_preferences_compiler.html, doc/de_preferences_debugger.html,
+	doc/de_preferences_general.html, doc/de_preferences_linker.html,
+	doc/de_preferences_templates.html, doc/de_run_debug_options.html,
+	doc/en_about.html, doc/en_asm_editor.html, doc/en_asm_file.html,
+	doc/en_asm_project.html, doc/en_extend_asm_examples.html,
+	doc/en_extend_asm_instruction.html,
+	doc/en_preferences_compiler.html, doc/en_preferences_debugger.html,
+	doc/en_preferences_general.html, doc/en_preferences_linker.html,
+	doc/en_preferences_templates.html, doc/en_run_debug_options.html,
+	doc/help.css, doc/toc.xml: Removed outdated docs completely.
+
+2012-05-07  P-a Backstrom <p-a>:
+
+	* META-INF/MANIFEST.MF, about.html, plugin.xml,
+	src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	src/de/fh_zwickau/asmplugin/ASMNature.java,
+	src/de/fh_zwickau/asmplugin/Activator.java,
+	src/de/fh_zwickau/asmplugin/Constants.java,
+	src/de/fh_zwickau/asmplugin/KickAssLauncher.java,
+	src/de/fh_zwickau/asmplugin/Messages.java,
+	src/de/fh_zwickau/asmplugin/SimpleExecutor.java,
+	src/de/fh_zwickau/asmplugin/TextAttributeConverter.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMCodeScanner.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMCompletionProcessor.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMContentOutlinePage.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMEditor.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMInstructionSet.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMLabelProvider.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMPartitionScanner.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMReconcilingStategy.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMSourceViewerConfiguration.jav
+	a,
+	src/de/fh_zwickau/asmplugin/editor/PropertyChangeRuleBaseScanner.ja
+	va, src/de/fh_zwickau/asmplugin/editor/ToggleCommentAction.java,
+	src/de/fh_zwickau/asmplugin/editor/TreeObject.java,
+	src/de/fh_zwickau/asmplugin/editor/WordRuleCaseInsensitive.java,
+	src/de/fh_zwickau/asmplugin/launch/ASMLaunchShortcut.java,
+	src/de/fh_zwickau/asmplugin/launch/ASMLaunchTabGroup.java,
+	src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java,
+	src/de/fh_zwickau/asmplugin/launch/ArgumentsTab.java,
+	src/de/fh_zwickau/asmplugin/launch/MainTab.java,
+	src/de/fh_zwickau/asmplugin/messages.properties,
+	src/de/fh_zwickau/asmplugin/ui/AsciiAction.java,
+	src/de/fh_zwickau/asmplugin/ui/AsciiDialog.java,
+	src/de/fh_zwickau/asmplugin/ui/MultiLineStringFieldEditor.java,
+	src/de/fh_zwickau/asmplugin/ui/OutputConsole.java,
+	src/de/fh_zwickau/asmplugin/ui/PreferencesCompiler.java,
+	src/de/fh_zwickau/asmplugin/ui/PreferencesDebugger.java,
+	src/de/fh_zwickau/asmplugin/ui/PreferencesGeneral.java,
+	src/de/fh_zwickau/asmplugin/ui/PreferencesTemplates.java,
+	src/de/fh_zwickau/asmplugin/ui/TemplateFileWizardPage.java,
+	src/de/fh_zwickau/asmplugin/ui/WizardNewFile.java,
+	src/de/fh_zwickau/asmplugin/ui/WizardNewProject.java,
+	src/org/lyllo/kickassplugin/Activator.java,
+	src/org/lyllo/kickassplugin/Constants.java,
+	src/org/lyllo/kickassplugin/KickAssLauncher.java,
+	src/org/lyllo/kickassplugin/KickAssemblerBuilder.java,
+	src/org/lyllo/kickassplugin/KickAssemblerNature.java,
+	src/org/lyllo/kickassplugin/Messages.java,
+	src/org/lyllo/kickassplugin/SimpleExecutor.java,
+	src/org/lyllo/kickassplugin/TextAttributeConverter.java,
+	src/org/lyllo/kickassplugin/editor/ASMCodeScanner.java,
+	src/org/lyllo/kickassplugin/editor/ASMCompletionProcessor.java,
+	src/org/lyllo/kickassplugin/editor/ASMContentOutlinePage.java,
+	src/org/lyllo/kickassplugin/editor/ASMEditor.java,
+	src/org/lyllo/kickassplugin/editor/ASMInstructionSet.java,
+	src/org/lyllo/kickassplugin/editor/ASMLabelProvider.java,
+	src/org/lyllo/kickassplugin/editor/ASMPartitionScanner.java,
+	src/org/lyllo/kickassplugin/editor/ASMReconcilingStategy.java,
+	src/org/lyllo/kickassplugin/editor/ASMSourceViewerConfiguration.jav
+	a,
+	src/org/lyllo/kickassplugin/editor/PropertyChangeRuleBaseScanner.ja
+	va, src/org/lyllo/kickassplugin/editor/ToggleCommentAction.java,
+	src/org/lyllo/kickassplugin/editor/TreeObject.java,
+	src/org/lyllo/kickassplugin/editor/WordRuleCaseInsensitive.java,
+	src/org/lyllo/kickassplugin/launch/ASMLaunchShortcut.java,
+	src/org/lyllo/kickassplugin/launch/ASMLaunchTabGroup.java,
+	src/org/lyllo/kickassplugin/launch/ASMLauncher.java,
+	src/org/lyllo/kickassplugin/launch/ArgumentsTab.java,
+	src/org/lyllo/kickassplugin/launch/MainTab.java,
+	src/org/lyllo/kickassplugin/messages.properties,
+	src/org/lyllo/kickassplugin/ui/AsciiAction.java,
+	src/org/lyllo/kickassplugin/ui/AsciiDialog.java,
+	src/org/lyllo/kickassplugin/ui/MultiLineStringFieldEditor.java,
+	src/org/lyllo/kickassplugin/ui/OutputConsole.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesCompiler.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesDebugger.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesGeneral.java,
+	src/org/lyllo/kickassplugin/ui/PreferencesTemplates.java,
+	src/org/lyllo/kickassplugin/ui/TemplateFileWizardPage.java,
+	src/org/lyllo/kickassplugin/ui/WizardNewFile.java,
+	src/org/lyllo/kickassplugin/ui/WizardNewProject.java: Renamed
+	packages.  Changed plugin-id.  Set new version.  Added copyright
+	statement.
+
+2012-05-06  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	src/de/fh_zwickau/asmplugin/Activator.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMInstructionSet.java: assert
+	libdir
+
+2012-05-06  P-a Backstrom <p-a>:
+
+	* META-INF/MANIFEST.MF, src/de/fh_zwickau/asmplugin/Activator.java: 
+	Reverted '/' replacement in Activator. '/' is _always_ used for root
+	in the Bundle-context
+
+2012-05-06  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java: Workaround
+	hack for windows.
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ui/PreferencesLinker.java: pruned more
+	dead code
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* plugin.xml, src/de/fh_zwickau/asmplugin/Activator.java,
+	src/de/fh_zwickau/asmplugin/ProgramExecuter.java,
+	src/de/fh_zwickau/asmplugin/WinApi.java,
+	src/de/fh_zwickau/asmplugin/ui/ConsoleAction.java,
+	src/de/fh_zwickau/asmplugin/ui/PreferencesCompiler.java: pruned dead
+	code
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java,
+	src/de/fh_zwickau/asmplugin/ui/PreferencesDebugger.java: trim params
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/KickAssLauncher.java,
+	src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java: Added debug
+	logging to launcher
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* META-INF/MANIFEST.MF,
+	src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	src/de/fh_zwickau/asmplugin/KickAssLauncher.java,
+	src/de/fh_zwickau/asmplugin/SimpleExecutor.java: Use Eclipse
+	facility to run java instead of hackish exec('java').
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* asm_instruction_set.xml: added missing keyword
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java: assumed
+	windowsbug regarding case in file-extensions fixed
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java: added more
+	breakpoints
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java: more fixes to
+	launch
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java: fix for
+	filenames missing paths
+
+2012-05-05  P-a Backstrom <p-a>:
+
+	* asm_instruction_set.xml,
+	src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	src/de/fh_zwickau/asmplugin/Constants.java,
+	src/de/fh_zwickau/asmplugin/Messages.java,
+	src/de/fh_zwickau/asmplugin/messages.properties,
+	src/de/fh_zwickau/asmplugin/ui/MultiLineStringFieldEditor.java,
+	src/de/fh_zwickau/asmplugin/ui/PreferencesCompiler.java: Added more
+	options (libdir, afo) Validation of parameters Better error-handling
+
+2012-05-04  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ui/WizardNewProject.java: fixed typo
+	in New Project wizardry
+
+2012-05-04  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/Activator.java,
+	src/de/fh_zwickau/asmplugin/TextAttributeConverter.java,
+	src/de/fh_zwickau/asmplugin/editor/ASMCodeScanner.java: added
+	default values for the prefsstore
+
+2012-05-04  P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ASMBuilder.java: bah, never tried
+	compiling *without* params.  Unit-tests FTW
+
+2012-05-04  P-a Backstrom <p-a>:
+
+	* asm_instruction_set.xml: escaped invalid character
+
+2012-05-03  P-a Backstrom <p-a>:
+
+	* initial
+2012-05-03   P-a Backstrom <p-a>:
+
+	* .settings/org.eclipse.jdt.core.prefs
+	  (added), .settings (added),
+	  .settings/org.eclipse.jdt.ui.prefs (added),
+	  .project (added): commit settings
+
+2012-05-03   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  src/de/fh_zwickau/asmplugin/SimpleExecutor.java,
+	  src/de/fh_zwickau/asmplugin/exec.bat
+	  (removed): cleanup
+
+	* src/de/fh_zwickau/asmplugin/editor/ASMContentOutlinePage.java,
+	  src/de/fh_zwickau/asmplugin/winapi.dll
+	  (removed), jni (removed): goodbye, windows API
+
+2012-05-03   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/editor/ASMContentOutlinePage.java,
+	  src/de/fh_zwickau/asmplugin/messages.properties,
+	  src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java:
+	  more outlining!
+
+2012-05-03   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java:
+	  launch by project-location, not workspace
+
+2012-05-03   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/editor/ASMContentOutlinePage.java,
+	  src/de/fh_zwickau/asmplugin/messages.properties,
+	  asm_instruction_set.xml,
+	  src/de/fh_zwickau/asmplugin/editor/ASMInstructionSet.java,
+	  src/de/fh_zwickau/asmplugin/Messages.java,
+	  src/de/fh_zwickau/asmplugin/editor/ASMCodeScanner.java,
+	  src/de/fh_zwickau/asmplugin/Constants.java,
+	  src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java,
+	  src/de/fh_zwickau/asmplugin/ui/PreferencesGeneral.java:
+	  added more syntax highlighting
+
+2012-05-03   P-a Backstrom <p-a>:
+
+	* asm_instruction_set.xml,
+	  src/de/fh_zwickau/asmplugin/editor/WordRuleCaseInsensitive.java:
+	  more syntax highlighting
+
+2012-05-03   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/editor/ASMCodeScanner.java:
+	  added syntax highlighting for labels and macros
+
+2012-05-03   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/editor/ASMEditor.java,
+	  src/cml/kickass (added),
+	  plugin.xml, src/cml
+	  (added),
+	  src/de/fh_zwickau/asmplugin/editor/ASMPartitionScanner.java,
+	  src/de/fh_zwickau/asmplugin/editor/ASMCodeScanner.java,
+	  src/cml/kickass/rip (added): fixed comment
+	  rules
+
+2012-05-02   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ui/WizardNewProject.java,
+	  asm_instruction_set.xml,
+	  src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  src/de/fh_zwickau/asmplugin/SimpleExecutor.java,
+	  src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java:
+	  Refactoring Refresh Eclipse stupid FS
+
+2012-05-02   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ASMBuilder.java:
+	  Eclipse API vs File API
+
+2012-05-02   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  src/de/fh_zwickau/asmplugin/SimpleExecutor.java,
+	  src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java:
+	  Conform to Eclipse API regarding files and resources
+
+2012-05-01   P-a Backstrom <p-a>:
+
+	* plugin.properties,
+	  plugin.xml,
+	  src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  .classpath,
+	  src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java:
+	  removed 'Linker'
+
+2012-05-01   P-a Backstrom <p-a>:
+
+	* plugin.properties,
+	  src/de/fh_zwickau/asmplugin/messages.properties,
+	  plugin.xml,
+	  src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  src/de/fh_zwickau/asmplugin/SimpleExecutor.java
+	  (added), plugin_de.properties (removed),
+	  src/de/fh_zwickau/asmplugin/ProgramExecuter.java,
+	  src/de/fh_zwickau/asmplugin/launch/ASMLauncher.java:
+	  breakpoint and launcher support
+
+2012-05-01   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/messages.properties,
+	  src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  src/de/fh_zwickau/asmplugin/Messages.java,
+	  src/de/fh_zwickau/asmplugin/ui/PreferencesCompiler.java,
+	  src/de/fh_zwickau/asmplugin/messages_de.properties
+	  (removed),
+	  src/de/fh_zwickau/asmplugin/Constants.java:
+	  symbolfile enable/disable
+
+2012-04-30   P-a Backstrom <p-a>:
+
+	* src/de/fh_zwickau/asmplugin/messages.properties,
+	  src/de/fh_zwickau/asmplugin/editor/ASMReconcilingStategy.java,
+	  src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  .classpath,
+	  src/de/fh_zwickau/asmplugin/ui/PreferencesCompiler.java:
+	  support for cmdlinevariables
+
+2012-04-30   P-a Backstrom <p-a>:
+
+	* plugin.properties,
+	  asm_instruction_set.xml,
+	  src/de/fh_zwickau/asmplugin/ASMBuilder.java,
+	  src/de/fh_zwickau/asmplugin/ui/WizardNewFile.java:
+	  fixed rebuild when .inc file is changed added some keywords
+	  merged changes in asm_instruction_set.xml made by Conjuror (http://codebase64.org/lib/exe/fetch.php?media=sourcecode:de.fh_zwickau.asmplugin_1.0.1a.zip)
+
+2012-04-28   P-a Backstrom <p-a>:
+
+	* Initial import from http://sourceforge.net/projects/asmplugin (trunk)
+
+
