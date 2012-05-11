@@ -126,6 +126,9 @@ public class PreferencesGeneral extends PreferencePage implements IWorkbenchPref
 	private void handleSyntaxColorListSelection() {
 		HighlightingColorListItem item = getHighlightingColorListItem();
 
+		if (item == null)
+			return;
+		
 		Color color = null;
 		boolean bold = false;
 		boolean italic = false;
