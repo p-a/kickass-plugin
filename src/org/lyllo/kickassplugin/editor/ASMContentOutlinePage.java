@@ -1,10 +1,10 @@
 /*
  Kick Assembler plugin - An Eclipse plugin for convenient Kick Assembling
  Copyright (c) 2012 - P-a Backstrom <pa.backstrom@gmail.com>
- 
+
  Based on ASMPlugin - http://sourceforge.net/projects/asmplugin/
  Copyright (c) 2006 - Andy Reek, D. Mitte
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/ 
+ */ 
 package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
@@ -210,274 +210,256 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 		private TreeObject macros = new TreeObject(Messages.TREEOBJECT_MACRO_NAME, Constants.TREEOBJECT_TYPE_ROOT_MACRO);
 
-		private TreeObject labels = new TreeObject(Messages.TREEOBJECT_LABEL_NAME, Constants.TREEOBJECT_TYPE_ROOT_LABEL);
-
-		private TreeObject segments = new TreeObject(Messages.TREEOBJECT_SEGMENT_NAME,
-				Constants.TREEOBJECT_TYPE_ROOT_SEGMENT);
+		private TreeObject labelsAndSegments = new TreeObject(Messages.TREEOBJECT_LABEL_NAME, Constants.TREEOBJECT_TYPE_ROOT_LABEL);
 
 		/**
 		 * {@inheritDoc}
 		 */
-		 public Object[] getChildren(Object parentElement) {
-			 if (parentElement instanceof TreeObject) {
-				 return ((TreeObject) parentElement).getChildren();
-			 }
+		public Object[] getChildren(Object parentElement) {
+			if (parentElement instanceof TreeObject) {
+				return ((TreeObject) parentElement).getChildren();
+			}
 
-			 return null;
-		 }
+			return null;
+		}
 
-		 /**
-		  * {@inheritDoc}
-		  */
-		 public Object getParent(Object element) {
-			 if (element instanceof TreeObject) {
-				 return ((TreeObject) element).getParent();
-			 }
+		/**
+		 * {@inheritDoc}
+		 */
+		public Object getParent(Object element) {
+			if (element instanceof TreeObject) {
+				return ((TreeObject) element).getParent();
+			}
 
-			 return null;
-		 }
+			return null;
+		}
 
-		 /**
-		  * {@inheritDoc}
-		  */
-		 public boolean hasChildren(Object element) {
-			 if (element instanceof TreeObject) {
-				 return (((TreeObject) element).getChildren().length > 0);
-			 }
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasChildren(Object element) {
+			if (element instanceof TreeObject) {
+				return (((TreeObject) element).getChildren().length > 0);
+			}
 
-			 return false;
-		 }
+			return false;
+		}
 
-		 /**
-		  * {@inheritDoc}
-		  */
-		 public Object[] getElements(Object inputElement) {
-			 if (inputElement == input) {
-				 ArrayList<TreeObject> objects = new ArrayList<TreeObject>();
+		/**
+		 * {@inheritDoc}
+		 */
+		public Object[] getElements(Object inputElement) {
+			if (inputElement == input) {
+				ArrayList<TreeObject> objects = new ArrayList<TreeObject>();
 
-				 if (segments.getChildren().length > 0) {
-					 objects.add(segments);
-				 }
+				if (labelsAndSegments.getChildren().length > 0) {
+					objects.add(labelsAndSegments);
+				}
 
-				 if (labels.getChildren().length > 0) {
-					 objects.add(labels);
-				 }
+				if (functions.getChildren().length > 0) {
+					objects.add(functions);
+				}
 
-				 if (functions.getChildren().length > 0) {
-					 objects.add(functions);
-				 }
+				if (macros.getChildren().length > 0) {
+					objects.add(macros);
+				}
 
-				 if (macros.getChildren().length > 0) {
-					 objects.add(macros);
-				 }
-			
-				 return objects.toArray(new Object[0]);
-			 }
+				return objects.toArray(new Object[0]);
+			}
 
-			 return null;
-		 }
+			return null;
+		}
 
-		 /**
-		  * {@inheritDoc}
-		  */
-		 public void dispose() {
-			 input = null;
-		 }
+		/**
+		 * {@inheritDoc}
+		 */
+		public void dispose() {
+			input = null;
+		}
 
-		 /**
-		  * {@inheritDoc}
-		  */
-		 public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			 if (oldInput instanceof IEditorInput) {
-				 input = null;
-			 }
+		/**
+		 * {@inheritDoc}
+		 */
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			if (oldInput instanceof IEditorInput) {
+				input = null;
+			}
 
-			 if (newInput instanceof IEditorInput) {
-				 input = (IEditorInput) newInput;
-				 parse();
-			 }
-		 }
+			if (newInput instanceof IEditorInput) {
+				input = (IEditorInput) newInput;
+				parse();
+			}
+		}
 
-		 /**
-		  * Finds an existing TreeObject in the tree model.
-		  * 
-		  * @param treeobj The given TreeObject.
-		  * 
-		  * @return The TreeObject, if found. Or null if not found.
-		  */
-		 private TreeObject findEqualTreeObject(TreeObject treeobj) {
-			 if (treeobj == null) {
-				 return null;
-			 }
+		/**
+		 * Finds an existing TreeObject in the tree model.
+		 * 
+		 * @param treeobj The given TreeObject.
+		 * 
+		 * @return The TreeObject, if found. Or null if not found.
+		 */
+		private TreeObject findEqualTreeObject(TreeObject treeobj) {
+			if (treeobj == null) {
+				return null;
+			}
 
-			 if (functions.equals(treeobj)) {
-				 return functions;
-			 }
+			if (functions.equals(treeobj)) {
+				return functions;
+			}
 
-			 if (macros.equals(treeobj)) {
-				 return macros;
-			 }
+			if (macros.equals(treeobj)) {
+				return macros;
+			}
 
-			 if (labels.equals(treeobj)) {
-				 return labels;
-			 }
+			if (labelsAndSegments.equals(treeobj)) {
+				return labelsAndSegments;
+			}
 
-			 if (segments.equals(treeobj)) {
-				 return segments;
-			 }
+			int i = 0;
+			TreeObject to = null;
+			Object[] o = functions.getChildren();
 
-			 int i = 0;
-			 TreeObject to = null;
-			 Object[] o = functions.getChildren();
+			for (i = 0; i < o.length; i++) {
+				if (o[i] instanceof TreeObject) {
+					to = (TreeObject) o[i];
 
-			 for (i = 0; i < o.length; i++) {
-				 if (o[i] instanceof TreeObject) {
-					 to = (TreeObject) o[i];
+					if (to.equals(treeobj)) {
+						return to;
+					}
+				}
+			}
 
-					 if (to.equals(treeobj)) {
-						 return to;
-					 }
-				 }
-			 }
+			o = macros.getChildren();
 
-			 o = macros.getChildren();
+			for (i = 0; i < o.length; i++) {
+				if (o[i] instanceof TreeObject) {
+					to = (TreeObject) o[i];
 
-			 for (i = 0; i < o.length; i++) {
-				 if (o[i] instanceof TreeObject) {
-					 to = (TreeObject) o[i];
+					if (to.equals(treeobj)) {
+						return to;
+					}
+				}
+			}
 
-					 if (to.equals(treeobj)) {
-						 return to;
-					 }
-				 }
-			 }
+			o = labelsAndSegments.getChildren();
 
-			 o = labels.getChildren();
+			for (i = 0; i < o.length; i++) {
+				if (o[i] instanceof TreeObject) {
+					to = (TreeObject) o[i];
 
-			 for (i = 0; i < o.length; i++) {
-				 if (o[i] instanceof TreeObject) {
-					 to = (TreeObject) o[i];
+					if (to.equals(treeobj)) {
+						return to;
+					}
+				}
+			}
 
-					 if (to.equals(treeobj)) {
-						 return to;
-					 }
-				 }
-			 }
+			return null;
+		}
 
-			 o = segments.getChildren();
+		/**
+		 * Parse the new input and build up the tree.
+		 */
+		private void parse() {
+			functions.setChildren(null);
+			macros.setChildren(null);
+			labelsAndSegments.setChildren(null);
 
-			 for (i = 0; i < o.length; i++) {
-				 if (o[i] instanceof TreeObject) {
-					 to = (TreeObject) o[i];
+			IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
 
-					 if (to.equals(treeobj)) {
-						 return to;
-					 }
-				 }
-			 }
+			if (document != null) {
+				int lines = document.getNumberOfLines();
+				int lineOffset,  linelen, matchStart, matchEnd, startOffset, length;
+				String stringLine = "";
+				String stringLineLower = "";
+				Pattern pattern = null;
+				Matcher matcher = null;
+				TreeObject child = null;
 
-			 return null;
-		 }
+				lineOffset = 0;
+				linelen = 0;
+				matchStart = 0;
+				matchEnd = 0;
+				startOffset = 0;
+				length = 0;
 
-		 /**
-		  * Parse the new input and build up the tree.
-		  */
-		 private void parse() {
-			 functions.setChildren(null);
-			 macros.setChildren(null);
-			 labels.setChildren(null);
-			 segments.setChildren(null);
+				for (int line = 0; line < lines; line++) {
+					try {
+						lineOffset = document.getLineOffset(line);
+						linelen = document.getLineLength(line);
+						stringLine = document.get(lineOffset, linelen);
 
-			 IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+						stringLineLower = stringLine.toLowerCase();
 
-			 if (document != null) {
-				 int lines = document.getNumberOfLines();
-				 int lineOffset,  linelen, matchStart, matchEnd, startOffset, length;
-				 String stringLine = "";
-				 String stringLineLower = "";
-				 Pattern pattern = null;
-				 Matcher matcher = null;
-				 TreeObject child = null;
+						if (stringLineLower.indexOf(".function") > -1) {
+							pattern = Pattern.compile("\\A\\s*.function\\s*(\\w+\\s*\\(.*\\)).*$");
+							matcher = pattern.matcher(stringLineLower);
 
-				 lineOffset = 0;
-				 linelen = 0;
-				 matchStart = 0;
-				 matchEnd = 0;
-				 startOffset = 0;
-				 length = 0;
+							if (matcher.find()) {
+								child = new TreeObject(matcher.group(1), Constants.TREEOBJECT_TYPE_PROCEDURE);
+								child.setData(new Position(lineOffset, 1));
 
-				 for (int line = 0; line < lines; line++) {
-					 try {
-						 lineOffset = document.getLineOffset(line);
-						 linelen = document.getLineLength(line);
-						 stringLine = document.get(lineOffset, linelen);
+								functions.addChild(child);
+							}
+						}
 
-						 stringLineLower = stringLine.toLowerCase();
+						if (stringLineLower.indexOf(".macro") > -1) {
+							pattern = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\(\\w+\\)).*$");
+							matcher = pattern.matcher(stringLineLower);
 
-						 if (stringLineLower.indexOf(".function") > -1) {
-							 pattern = Pattern.compile("\\A\\s*.function\\s*(\\w+\\s*\\(.*\\)).*$");
-							 matcher = pattern.matcher(stringLineLower);
+							if (matcher.find()) {
+								child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_MACRO);
+								child.setData(new Position(lineOffset, 1));
+								macros.addChild(child);
+							}
+						}
 
-							 if (matcher.find()) {
-								 child = new TreeObject(matcher.group(1), Constants.TREEOBJECT_TYPE_PROCEDURE);
-								 child.setData(new Position(lineOffset, 1));
+						if (stringLineLower.indexOf(".label") > -1) {
+							pattern = Pattern.compile("\\A\\s*\\.label\\s+(\\w+\\s*=\\s*\\S+).*$");
+							matcher = pattern.matcher(stringLineLower);
 
-								 functions.addChild(child);
-							 }
-						 }
+							if (matcher.find()) {
+								child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_LABEL);
+								child.setData(new Position(lineOffset, 1));
+								labelsAndSegments.addChild(child);
+							}
+						}
 
-						 if (stringLineLower.indexOf(".macro") > -1) {
-							 pattern = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\(\\w+\\)).*$");
-							 matcher = pattern.matcher(stringLineLower);
+						if (stringLineLower.indexOf(":") > -1) {
+							pattern = Pattern.compile("\\A\\s*\\.*(\\w+):\\s+.*$");
+							matcher = pattern.matcher(stringLineLower);
 
-							 if (matcher.find()) {
-								 child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_MACRO);
-								 child.setData(new Position(lineOffset, 1));
-								 macros.addChild(child);
-							 }
-						 }
+							if (matcher.find()) {
+								matchStart = matcher.start(1);
+								matchEnd = matcher.end(1);
+								startOffset = lineOffset + matchStart;
+								length = lineOffset + matchEnd - startOffset;
 
-						 if (stringLineLower.indexOf(".label") > -1) {
-							 pattern = Pattern.compile("\\A\\s*\\.label\\s+(\\w+\\s*=\\s*\\S+).*$");
-							 matcher = pattern.matcher(stringLineLower);
+								child = new TreeObject(stringLine.substring(matchStart, matchEnd), Constants.TREEOBJECT_TYPE_LABEL);
+								child.setData(new Position(startOffset, length));
+								
+								TreeObject node = labelsAndSegments;
+								int sz = labelsAndSegments.getChildren().length;
+								if (sz > 0 && ((TreeObject)labelsAndSegments.getChild(sz-1)).getType() == Constants.TREEOBJECT_TYPE_SEGMENT){
+									node = ((TreeObject) labelsAndSegments.getChild(sz-1));
+								}
+								node.addChild(child);
+							}
+						}
 
-							 if (matcher.find()) {
-								 child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_LABEL);
-								 child.setData(new Position(lineOffset, 1));
-								 labels.addChild(child);
-							 }
-						 }
-
-						 if (stringLineLower.indexOf(":") > -1) {
-							 pattern = Pattern.compile("\\A\\s*\\.*(\\w+):\\s+.*$");
-							 matcher = pattern.matcher(stringLineLower);
-
-							 if (matcher.find()) {
-								 matchStart = matcher.start(1);
-								 matchEnd = matcher.end(1);
-								 startOffset = lineOffset + matchStart;
-								 length = lineOffset + matchEnd - startOffset;
-
-								 child = new TreeObject(stringLine.substring(matchStart, matchEnd), Constants.TREEOBJECT_TYPE_LABEL);
-								 child.setData(new Position(startOffset, length));
-
-								 labels.addChild(child);
-							 }
-						 }
-
-						 if (stringLineLower.indexOf(".pc") > -1 || stringLineLower.indexOf(".pseudopc") > -1) {
-							 child = new TreeObject(stringLineLower.replace("{","").trim(), Constants.TREEOBJECT_TYPE_SEGMENT);
-							 child.setData(new Position(lineOffset, 1));
-							 segments.addChild(child);
-						 }
-					 }
-					 catch (BadLocationException e) {
-						 Activator.getDefault().getLog().log(
-								 new Status(Status.ERROR, Constants.PLUGIN_ID, Status.OK,
-										 Messages.BADLOCATION_ERROR, e));
-					 }
-				 }
-			 }
-		 }
+						if (stringLineLower.indexOf(".pc") > -1 || stringLineLower.indexOf(".pseudopc") > -1
+								 || stringLineLower.indexOf(".namespace") > -1) {
+							child = new TreeObject(stringLineLower.replace("{","").trim(), Constants.TREEOBJECT_TYPE_SEGMENT);
+							child.setData(new Position(lineOffset, 1));
+							labelsAndSegments.addChild(child);
+						}
+					}
+					catch (BadLocationException e) {
+						Activator.getDefault().getLog().log(
+								new Status(Status.ERROR, Constants.PLUGIN_ID, Status.OK,
+										Messages.BADLOCATION_ERROR, e));
+					}
+				}
+			}
+		}
 	}
 }
