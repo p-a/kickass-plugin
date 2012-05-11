@@ -34,7 +34,7 @@ Eclipse plugin for convenient Kick Assembling binaries for the Commodore 64
 ## Installation
 Either download the zip-file from github [Downloads](https://github.com/p-a/kickass-plugin/downloads)
 Or clone the project from Github, and build and export in Eclipse.
-The resulting jar goes into the plugins-directory in your Eclipse install.
+The resulting jar goes into the dropins-directory in your Eclipse install.
 
 ## Usage
 Install plugin (see above). Create new Kick Assembler project.
