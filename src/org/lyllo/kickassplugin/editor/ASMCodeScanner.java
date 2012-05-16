@@ -1,10 +1,10 @@
 /*
  Kick Assembler plugin - An Eclipse plugin for convenient Kick Assembling
  Copyright (c) 2012 - P-a Backstrom <pa.backstrom@gmail.com>
- 
+
  Based on ASMPlugin - http://sourceforge.net/projects/asmplugin/
  Copyright (c) 2006 - Andy Reek, D. Mitte
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -18,13 +18,14 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/ 
+ */ 
 package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
@@ -44,7 +45,7 @@ import org.lyllo.kickassplugin.TextAttributeConverter;
  * @author Andy Reek
  * @since 15.11.2005
  */
-public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeListener {
+public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeListener, IRuleListener {
 
 	private Token instructionToken;
 
@@ -57,6 +58,8 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 	private Token classToken;
 
 	private ASMEditor editor;
+
+	private ITokenMatch lastMatch;
 
 	/**
 	 * The constructor.
@@ -76,19 +79,82 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 		rules.add( createWordRuleMapping(ASMInstructionSet.getConstants(), constantToken) );
 		rules.add( createWordRuleMapping(ASMInstructionSet.getClasses(), classToken) );
 
+		IRule immediateRule = new IRule() {
+
+			public IToken evaluate(ICharacterScanner scanner){
+
+				if (lastMatch.getToken() != instructionToken && scanner.getColumn() < lastMatch.getColumn())
+					return Token.UNDEFINED;
+
+				int count = 0;
+				IToken token = Token.UNDEFINED;
+				count++;
+				if ('#' == scanner.read()){
+					token = instructionToken;	
+					tokenFound(new ITokenMatch("#", scanner.getColumn(), token));
+				} else {
+					for(int i=0; i < count; i++)
+						scanner.unread();
+				}
+
+				return token;
+			}
+		};
+
+		IRule immediateConstantRule = new IRule() {
+
+			public IToken evaluate(ICharacterScanner scanner){
+
+				if (lastMatch.getToken() != instructionToken || scanner.getColumn() < lastMatch.getColumn() || !"#".equals(lastMatch.getString()))
+					return Token.UNDEFINED;
+
+				IToken token = Token.UNDEFINED;
+				int c = 0;
+				int count = 0;
+				do {
+					c = scanner.read();
+					count++;
+				} while (c != ICharacterScanner.EOF && Character.isWhitespace(c));
+				
+				StringBuffer buf = new StringBuffer();
+				if (!Character.isWhitespace(c))
+					buf.append((char)c);
+				
+				while ((c=scanner.read()) != ICharacterScanner.EOF && !Character.isWhitespace(c)){
+					count++;
+					buf.append((char)c);
+				}
+
+				if (buf.length() != 0){
+					token = constantToken;
+					tokenFound(new ITokenMatch(buf.toString(), scanner.getColumn(), token));
+				} else {
+					for(int i=0; i < count; i++)
+						scanner.unread();
+
+				}
+
+				return token;
+			}
+		};
+
 		IRule labelRule = new IRule() {
 
 			public IToken evaluate(ICharacterScanner scanner) {
 				int count = 0;
 				IToken token = Token.UNDEFINED;
 				count++;
-				if(Character.isJavaIdentifierStart(scanner.read())){
-					int c = 0;
+				StringBuffer buf = new StringBuffer();
+				int c = 0;
+				if(Character.isJavaIdentifierStart((c=scanner.read()))){
+					buf.append((char)c);
 					while ((c=scanner.read()) != ICharacterScanner.EOF && Character.isJavaIdentifierPart(c)){
 						count++;
+						buf.append((char)c);
 					}
 					if (c == ':'){
 						token = segmentToken;
+						tokenFound(new ITokenMatch(buf.toString(), scanner.getColumn(), token));
 					}
 				}
 
@@ -104,13 +170,17 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 			public IToken evaluate(ICharacterScanner scanner) {
 				IToken token = Token.UNDEFINED;
 				int count = 1;
+
 				if(scanner.read() == ':'){
+					StringBuffer buf = new StringBuffer();
 					int c = 0;
 					while ((c=scanner.read()) != ICharacterScanner.EOF && Character.isJavaIdentifierPart(c)){
 						count++;
+						buf.append((char)c);
 					}
 					if (Character.isWhitespace(c) || c =='(' || scanner.getColumn()==0){
 						token = segmentToken;
+						tokenFound(new ITokenMatch(buf.toString(), scanner.getColumn(), token));
 					}
 				}
 
@@ -121,13 +191,15 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 			}
 		};
 
+		rules.add(immediateRule);
+		rules.add(immediateConstantRule);
 		rules.add(labelRule);
 		rules.add(macroRule);
 		setRules(rules.toArray(new IRule[] {}));
 	}
 
 	private WordRuleCaseInsensitive createWordRuleMapping(HashMap<String, String> map, IToken token) {
-		WordRuleCaseInsensitive wordRule = new WordRuleCaseInsensitive();
+		WordRuleCaseInsensitive wordRule = new WordRuleCaseInsensitive(this);
 
 		if (map != null) {
 			for (String word : map.keySet()) {
@@ -183,5 +255,9 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 		}
 
 		editor.refreshSourceViewer();
+	}
+
+	public void tokenFound(ITokenMatch match) {
+		this.lastMatch = match;
 	}
 }

@@ -39,24 +39,25 @@ public class WordRuleCaseInsensitive extends WordRule {
    * Buffer used for pattern detection
    */
   private StringBuffer fBuffer = new StringBuffer();
+private IRuleListener listener;
 
   /**
    * The constructor.
    */
-  public WordRuleCaseInsensitive() {
-    this(Token.UNDEFINED);
+  public WordRuleCaseInsensitive(IRuleListener listener) {
+    this(Token.UNDEFINED, listener);
   }
 
   /**
    * Creates a rule which. If no token has been associated, the specified
    * default token will be returned.
    * 
-   * @param defaultToken the default token to be returned on success if nothing
+   * @param  the default token to be returned on success if nothing
    *          else is specified, may not be <code>null</code>
    * 
    * @see #addWord(String, IToken)
    */
-  public WordRuleCaseInsensitive(IToken defaultToken) {
+  public WordRuleCaseInsensitive(IToken defaultToken, IRuleListener listener) {
     super(new IWordDetector() { // A dummy. WordDetector will be
             // replaced a
             // few rows below.
@@ -67,9 +68,10 @@ public class WordRuleCaseInsensitive extends WordRule {
             public boolean isWordStart(char c) {
               return false;
             }
-          }, defaultToken);
+          } );
 
     fDetector = new MyWordDetector();
+    this.listener = listener;
   }
 
   /**
@@ -101,6 +103,7 @@ public class WordRuleCaseInsensitive extends WordRule {
 
         IToken token = (IToken) fWords.get(fBuffer.toString());
         if (token != null) {
+        	this.listener.tokenFound(new ITokenMatch(fBuffer.toString(), scanner.getColumn(), token));
           return token;
         }
 

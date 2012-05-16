@@ -78,7 +78,8 @@ public class ASMSourceViewerConfiguration extends SourceViewerConfiguration {
     assistant.enableAutoActivation(true);
     assistant.enableAutoInsert(true);
     assistant.setAutoActivationDelay(500);
-
+    
+    assistant.enablePrefixCompletion(true);
     return assistant;
   }
 
