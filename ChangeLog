@@ -22,6 +22,10 @@
 CHANGELOG:
 ------------------------------------------------------------------------------ 
 
+See https://github.com/p-a/kickass-plugin/commits/master 
+
+Before import to Github:
+
 2012-05-08  P-a Backstrom <p-a>:
 
 	* src/org/lyllo/kickassplugin/KickAssemblerBuilder.java: added TODO
