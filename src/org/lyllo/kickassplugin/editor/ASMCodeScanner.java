@@ -59,7 +59,7 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 
 	private ASMEditor editor;
 
-	private ITokenMatch lastMatch;
+	private ITokenMatch lastMatch = new ITokenMatch("", 0, Token.UNDEFINED);
 
 	/**
 	 * The constructor.

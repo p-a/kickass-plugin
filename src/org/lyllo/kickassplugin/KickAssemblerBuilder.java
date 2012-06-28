@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -36,6 +37,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -49,15 +51,20 @@ import org.eclipse.ui.statushandlers.StatusManager;
  */
 public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
+	private IPath srcFolder;
+
 	/**
 	 * {@inheritDoc}
 	 */
+	
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 
 		Activator.getConsole().bringConsoleToFront();
 		Activator.getConsole().println(Messages.BUILDING_TEXT_CONSOLE);
 		Activator.getConsole().println();
-
+		
+		srcFolder = getProject().getFolder("src").getProjectRelativePath();
+		
 		try {
 			if (kind == IncrementalProjectBuilder.FULL_BUILD) {
 				fullBuild(monitor);
@@ -269,8 +276,10 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		public boolean visit(IResource resource) throws CoreException {
 			int resourceType = resource.getType();
 
-			if ((resourceType == IResource.FOLDER) || (resourceType == IResource.PROJECT)) {
-				return true;
+			if (resourceType == IResource.PROJECT) {
+				return getProject().getName().equals(resource.getName());
+			} else if (resourceType == IResource.FOLDER) {
+				return resource.getProjectRelativePath().matchingFirstSegments(srcFolder) == 1;
 			} else if (resourceType == IResource.FILE) {
 				String extension = resource.getFileExtension();
 				if ("asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension)){
@@ -299,13 +308,15 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 				IResource resource = delta.getResource();
 				int resourceType = resource.getType();
 
-				if ((resourceType == IResource.FOLDER) || (resourceType == IResource.PROJECT)) {
-					return true;
+				if (resourceType == IResource.PROJECT) {
+					return getProject().getName().equals(resource.getName());
+				} else if (resourceType == IResource.FOLDER) {
+					return resource.getProjectRelativePath().matchingFirstSegments(srcFolder) == 1;
 				} else if (resourceType == IResource.FILE) {
 					String extension = resource.getFileExtension();
 					if ((extension != null) && ( "asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension))) {
 						compileFile((IFile) resource);
-					} else if ("inc".equalsIgnoreCase(extension)){
+					} else if ("inc".equalsIgnoreCase(extension) || "sym".equalsIgnoreCase(extension)){
 						//TODO build only dependants
 						throw new IllegalStateException("include file changed, full rebuild required");
 					}
