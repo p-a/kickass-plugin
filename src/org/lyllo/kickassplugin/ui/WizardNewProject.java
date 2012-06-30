@@ -82,7 +82,7 @@ public class WizardNewProject extends Wizard implements INewWizard {
 			project.open(null);
 
 			createOrRefreshFolder(project, "src");
-			createOrRefreshFolder(project, Constants.BUILD_DIRECTORY);
+			createOrRefreshFolder(project, Constants.DEFAULT_BUILD_DIRECTORY);
 
 			IProjectDescription description = project.getDescription();
 

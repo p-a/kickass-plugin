@@ -231,7 +231,7 @@ public class ASMEditor extends TextEditor {
     ProjectionAnnotation annotation = null;
     Position position = null;
 
-    for (Iterator iter = annotationModel.getAnnotationIterator(); iter.hasNext();) {
+    for (Iterator<?> iter = annotationModel.getAnnotationIterator(); iter.hasNext();) {
       annotationObject = iter.next();
 
       if (annotationObject instanceof ProjectionAnnotation) {

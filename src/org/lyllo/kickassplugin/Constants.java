@@ -257,9 +257,13 @@ public class Constants {
   /**
    * Build output-directory.
    */
-  public static final String BUILD_DIRECTORY = "build";
+  public static final String DEFAULT_BUILD_DIRECTORY = "build";
 
+  public static final String DEFAULT_SRC_DIRECTORY = "src";
 
+  public static final String PROJECT_PREFS_BUILD_DIRECTORY_KEY = "org.lyllo.kickassplugin.project.builddir";
+  public static final String PROJECT_PREFS_SRC_DIRECTORY_KEY = "org.lyllo.kickassplugin.project.srcdir";
+  public static final String PROJECT_PREFS_LIBDIR_DIRECTORY_KEY = "org.lyllo.kickassplugin.project.libdir";
 
 
 

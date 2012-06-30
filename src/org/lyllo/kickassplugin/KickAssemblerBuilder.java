@@ -1,10 +1,10 @@
 /*
  Kick Assembler plugin - An Eclipse plugin for convenient Kick Assembling
  Copyright (c) 2012 - P-a Backstrom <pa.backstrom@gmail.com>
- 
+
  Based on ASMPlugin - http://sourceforge.net/projects/asmplugin/
  Copyright (c) 2006 - Andy Reek, D. Mitte
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -18,16 +18,16 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/ 
+ */ 
 package org.lyllo.kickassplugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -42,8 +42,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
- 
- /**  
+import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
+
+/**  
  * Builder for ASM-Files.
  * 
  * @author Andy Reek
@@ -51,20 +52,24 @@ import org.eclipse.ui.statushandlers.StatusManager;
  */
 public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
-	private IPath srcFolder;
+	private IPath[] srcFolders;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	
+
+	protected IPath[] getSrcFolders(){
+		return srcFolders;
+	}
+
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 
 		Activator.getConsole().bringConsoleToFront();
 		Activator.getConsole().println(Messages.BUILDING_TEXT_CONSOLE);
 		Activator.getConsole().println();
-		
-		srcFolder = getProject().getFolder("src").getProjectRelativePath();
-		
+
+		createSrcIPaths();
+
 		try {
 			if (kind == IncrementalProjectBuilder.FULL_BUILD) {
 				fullBuild(monitor);
@@ -82,6 +87,18 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		}
 
 		return null;
+	}
+
+	private void createSrcIPaths() {
+		String[] split = ProjectPrefenceHelper.getSourceDirs(getProject());
+		if (split.length == 0){
+			split = new String[] {Constants.DEFAULT_SRC_DIRECTORY};
+		}
+		srcFolders = new IPath[split.length];
+
+		for (int i = 0; i < split.length; i++ ){
+			srcFolders[i] =getProject().getFolder(split[i]).getProjectRelativePath();
+		}
 	}
 
 	/**
@@ -138,10 +155,13 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 	 */
 	private void compileFile(IFile file) throws CoreException {
 
-		String destdir = getProject().getLocationURI().getRawPath() + File.separator + Constants.BUILD_DIRECTORY;
+		String buildDir = ProjectPrefenceHelper.getBuildDir(getProject());
+		
+		String destdir = getProject().getLocationURI().getRawPath() + File.separator + buildDir;
 
-
-		IFolder destFolder = file.getProject().getFolder(Constants.BUILD_DIRECTORY);
+		//FIXME
+		IFolder destFolder = file.getProject().getFolder(buildDir);
+		
 		if (!destFolder.exists()){
 			destFolder.create(IResource.NONE, true, null);
 			destFolder.setDerived(true,null);
@@ -183,8 +203,24 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		boolean viceSymbols = store.getBoolean(Constants.PREFERENCES_COMPILER_VICESYMBOLS);
 		boolean symbols = store.getBoolean(Constants.PREFERENCES_COMPILER_SYMBOLS);
 		boolean afo = store.getBoolean(Constants.PREFERENCES_COMPILER_AFO);
-		String libdirs = store.getString(Constants.PREFERENCES_COMPILER_LIBDIRS);
-
+		List<String> libdirsArray = new ArrayList<String>();
+		{
+			String rawProjectPath = file.getProject().getLocationURI().getRawPath() + File.separator;
+			
+			String libdirsGlobal = store.getString(Constants.PREFERENCES_COMPILER_LIBDIRS);
+			
+			String[] libdirs = ProjectPrefenceHelper.getLibDirs(file.getProject());
+			for (String temp: libdirs){
+				libdirsArray.add(rawProjectPath + temp);
+			}
+			
+			if (libdirsGlobal != null && !"".equals(libdirsGlobal)){
+				String[] split = libdirsGlobal.split(File.pathSeparator);
+				List<String> splitArray = Arrays.asList(split);
+				libdirsArray.addAll(splitArray);
+			}
+		}
+		
 		if ((compiler == null) || (compiler.trim().length() < 1)) {
 			return null;
 		}
@@ -209,9 +245,10 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		if (afo){
 			cmdArray.add("-afo");
 		}
-		
-		if (libdirs != null && !"".equals(libdirs.trim())){
-			for (String dir :libdirs.split(File.pathSeparator)){
+
+
+		if (!libdirsArray.isEmpty()){
+			for (String dir : libdirsArray){
 				dir = dir.trim();
 				if (new File(dir).exists()){
 					cmdArray.add("-libdir");
@@ -279,7 +316,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 			if (resourceType == IResource.PROJECT) {
 				return getProject().getName().equals(resource.getName());
 			} else if (resourceType == IResource.FOLDER) {
-				return resource.getProjectRelativePath().matchingFirstSegments(srcFolder) == 1;
+				return matchingSourceFolder(resource.getProjectRelativePath());
 			} else if (resourceType == IResource.FILE) {
 				String extension = resource.getFileExtension();
 				if ("asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension)){
@@ -289,6 +326,17 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 			return false;
 		}
+
+
+	}
+
+	private boolean matchingSourceFolder(IPath projectRelativePath) {
+		for (IPath path: getSrcFolders()){
+			if (projectRelativePath.matchingFirstSegments(path) == path.segmentCount()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -311,7 +359,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 				if (resourceType == IResource.PROJECT) {
 					return getProject().getName().equals(resource.getName());
 				} else if (resourceType == IResource.FOLDER) {
-					return resource.getProjectRelativePath().matchingFirstSegments(srcFolder) == 1;
+					return matchingSourceFolder(resource.getProjectRelativePath());
 				} else if (resourceType == IResource.FILE) {
 					String extension = resource.getFileExtension();
 					if ((extension != null) && ( "asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension))) {

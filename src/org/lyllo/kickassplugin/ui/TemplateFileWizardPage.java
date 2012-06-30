@@ -135,10 +135,6 @@ public class TemplateFileWizardPage extends WizardPage {
     String path = Activator.getFilePathFromPlugin("templates");
     File file = new File(path);
 
-    if (file == null) {
-      return;
-    }
-
     File[] files = file.listFiles();
 
     if (files == null) {

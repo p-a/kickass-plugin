@@ -137,7 +137,7 @@ public class Activator extends AbstractUIPlugin {
     IPath path = null;
     String result = "";
 
-    Enumeration enu = Activator.getDefault().getBundle().findEntries("/", entrie, true);
+    Enumeration<URL> enu = Activator.getDefault().getBundle().findEntries("/", entrie, true);
     if (enu.hasMoreElements()) {
       url = (URL) enu.nextElement();
     }

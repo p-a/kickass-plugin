@@ -60,7 +60,7 @@
       </builder>
    </extension>
    <extension
-         point="org.eclipse.ui.newWizards">
+   		 point="org.eclipse.ui.newWizards">
       <wizard
             category="org.lyllo.kickassplugin.new.category"
             class="org.lyllo.kickassplugin.ui.WizardNewProject"
@@ -197,5 +197,45 @@
       <toc
             file="doc/toc.xml"
             primary="true"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="org.lyllo.kickassplugin.contribution1"
+            objectClass="org.eclipse.core.resources.IProject">
+         <menu
+               id="org.lyllo.kickassplugin.menu1"
+               label="Build Path"
+               path="edit">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="org.lyllo.kickassplugin.popup.actions.BuildpathAction"
+               enablesFor="1"
+               id="org.lyllo.kickassplugin.newAction"
+               label="Configure Build Path"
+               menubarPath="org.lyllo.kickassplugin.menu1/group1">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences" name="preferences">
+         <scope name="project" class="org.eclipse.core.internal.resources.ProjectPreferences"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+         <page
+            name="Build Path"
+            nameFilter="*"
+            class="org.lyllo.kickassplugin.ui.BuildPathPropertyPage"
+            id="org.lyllo.kickassplugin.buildPathPropertyPage">
+      		 <enabledWhen>
+             <instanceof
+                  value="org.eclipse.core.resources.IProject">
+             </instanceof>
+          </enabledWhen>
+      	</page>
    </extension>
 </plugin>
