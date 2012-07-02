@@ -65,7 +65,7 @@ public class PreferencesCompiler extends FieldEditorPreferencePage implements IW
     FileFieldEditor compiler = new FileFieldEditor(Constants.PREFERENCES_COMPILER_NAME, Messages.COMPILER_NAME + ": ",
                                                    true, parent);
     compiler.setEmptyStringAllowed(false);
-    compiler.setFileExtensions(new String[]{"jar"});
+    compiler.setFileExtensions(new String[]{"*.jar"});
     
     addField(compiler);
 

@@ -218,7 +218,19 @@
                label="Configure Build Path"
                menubarPath="org.lyllo.kickassplugin.menu1/group1">
          </action>
-      </objectContribution>
+         <enablement>
+	     <or>
+	         <instanceof value="com.acme.navigator.ContainerObject"/>
+	         <instanceof value="com.acme.navigator.RootObject"/>
+	         <adapt type="org.eclipse.core.resources.IResource">
+	             <test
+	                   property="org.eclipse.core.resources.projectNature"
+	                   value="org.lyllo.kickassplugin.nature">
+	             </test>
+	         </adapt>
+	     </or>
+	 </enablement>
+	      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences" name="preferences">
@@ -232,9 +244,17 @@
             class="org.lyllo.kickassplugin.ui.BuildPathPropertyPage"
             id="org.lyllo.kickassplugin.buildPathPropertyPage">
       		 <enabledWhen>
+      		 <and>
              <instanceof
                   value="org.eclipse.core.resources.IProject">
              </instanceof>
+              <adapt type="org.eclipse.core.resources.IResource">
+	             <test
+	                   property="org.eclipse.core.resources.projectNature"
+	                   value="org.lyllo.kickassplugin.nature">
+	             </test>
+	         </adapt>
+	         </and>
           </enabledWhen>
       	</page>
    </extension>
