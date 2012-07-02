@@ -98,8 +98,6 @@ public class WizardNewProject extends Wizard implements INewWizard {
 			}
 			
 			IProjectDescription description = project.getDescription();
-			description.setLocation(locationPath);
-
 			String[] natures = description.getNatureIds();
 			String[] newNatures = new String[natures.length + 1];
 			System.arraycopy(natures, 0, newNatures, 0, natures.length);
