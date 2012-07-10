@@ -90,7 +90,9 @@
 <segment field=".BYTE" description="Assembler directive that defines bytes" />
 <segment field=".WORD" description="" />
 <segment field=".DWORD" description="" />
-<segment field=".TEXT" description="Assembler directive that defines the program instructions." />
+<segment field=".TEXT" description="" />
+<segment field=".PLUGIN" description="" />
+<segment field=".MODIFY" description="" />
 
 <segment field=".FILL" description="Assembler directive that defines bytes" />
 <segment field=".STRUCT" description="Assembler directive that defines the program instructions." />

@@ -1,6 +1,9 @@
 package org.lyllo.kickassplugin.prefs;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -31,4 +34,19 @@ public class ProjectPrefenceHelper {
 	public static String[] getLibDirs(IProject project){
 		return getStore(project).getString(Constants.PROJECT_PREFS_LIBDIR_DIRECTORY_KEY).split(File.pathSeparator);
 	}
+	
+	public static List<String> getAbsoluteLibDirs(IProject project){
+		
+		String rawProjectPath = project.getLocationURI().getRawPath() + File.separator;
+		List<String> libdirsArray = new ArrayList<String>();
+		
+		String[] libdirs = getLibDirs(project);
+		for (String temp: libdirs){
+			libdirsArray.add(rawProjectPath + temp);
+		}
+		
+		return libdirsArray;
+	}
+	
+	
 }

@@ -22,9 +22,12 @@
 package org.lyllo.kickassplugin;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
@@ -39,10 +42,11 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
+import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 public class KickAssLauncher implements IStreamListener {
 
-	public void launch(String[] args, String filedir) throws CoreException {
+	public void launch(String[] args, String filedir, IProject project) throws CoreException {
 		IVMInstall vmInstall = JavaRuntime.getDefaultVMInstall();
 		if (vmInstall != null) {
 			IVMRunner vmRunner = vmInstall.getVMRunner(ILaunchManager.RUN_MODE);
@@ -50,14 +54,20 @@ public class KickAssLauncher implements IStreamListener {
 				JarFile jar = null;
 				IProcess iProcess = null;
 				try {
-					String[] classPath = null;
+					String[] classPathTemp = null;
 					IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-					classPath = new String[]{store.getString(Constants.PREFERENCES_COMPILER_NAME)};
-					jar = new JarFile(classPath[0]);
+					classPathTemp = new String[]{store.getString(Constants.PREFERENCES_COMPILER_NAME)};
+					jar = new JarFile(classPathTemp[0]);
 					String mainClass = jar.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
 					jar.close();
+					
+					List<String> classPathList = new ArrayList<String>();
+					classPathList.add(classPathTemp[0]);
+					classPathList.addAll(ProjectPrefenceHelper.getAbsoluteLibDirs(project));
+					classPathList.addAll(Activator.getGlobalLibdirs());
+					
 					VMRunnerConfiguration vmConfig = 
-							new VMRunnerConfiguration(mainClass, classPath);
+							new VMRunnerConfiguration(mainClass, classPathList.toArray(new String[]{}));
 					ILaunch launch = new Launch(null, ILaunchManager.RUN_MODE, null);
 					vmConfig.setProgramArguments(args);
 					vmConfig.setWorkingDirectory(filedir);

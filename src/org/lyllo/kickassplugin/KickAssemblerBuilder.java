@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
@@ -175,7 +176,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 			throw new CoreException(new Status(Status.ERROR, Constants.PLUGIN_ID, "Could not compile. Please make sure that you have set the path to Kickass.jar in the Preferences"));
 		}
 
-		new KickAssLauncher().launch(cmdLine, filedir);
+		new KickAssLauncher().launch(cmdLine, filedir, file.getProject());
 		try {
 
 			destFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -204,22 +205,8 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		boolean symbols = store.getBoolean(Constants.PREFERENCES_COMPILER_SYMBOLS);
 		boolean afo = store.getBoolean(Constants.PREFERENCES_COMPILER_AFO);
 		List<String> libdirsArray = new ArrayList<String>();
-		{
-			String rawProjectPath = file.getProject().getLocationURI().getRawPath() + File.separator;
-			
-			String libdirsGlobal = store.getString(Constants.PREFERENCES_COMPILER_LIBDIRS);
-			
-			String[] libdirs = ProjectPrefenceHelper.getLibDirs(file.getProject());
-			for (String temp: libdirs){
-				libdirsArray.add(rawProjectPath + temp);
-			}
-			
-			if (libdirsGlobal != null && !"".equals(libdirsGlobal)){
-				String[] split = libdirsGlobal.split(File.pathSeparator);
-				List<String> splitArray = Arrays.asList(split);
-				libdirsArray.addAll(splitArray);
-			}
-		}
+		libdirsArray.addAll(ProjectPrefenceHelper.getAbsoluteLibDirs(file.getProject()));
+		libdirsArray.addAll(Activator.getGlobalLibdirs());
 		
 		if ((compiler == null) || (compiler.trim().length() < 1)) {
 			return null;
