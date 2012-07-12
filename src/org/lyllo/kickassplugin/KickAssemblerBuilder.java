@@ -21,21 +21,16 @@
  */ 
 package org.lyllo.kickassplugin;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.management.monitor.Monitor;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -269,7 +264,6 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 		String destdir = getProject().getLocationURI().getRawPath() + File.separator + buildDir;
 
-		//FIXME
 		IFolder destFolder = file.getProject().getFolder(buildDir);
 
 		if (!destFolder.exists()){
@@ -369,7 +363,6 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 			}
 		}
-
 		return cmdArray.toArray(new String[]{});
 	}
 
