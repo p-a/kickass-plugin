@@ -159,7 +159,11 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 			} 
 
 			if (arg0.getType() == IResource.FILE){
-				String ext = arg0.getFileExtension().toLowerCase();
+				
+				String ext = arg0.getFileExtension();
+				if (ext != null){
+					ext = ext.toLowerCase();
+				}
 				if ("asm".equals(ext) || "s".equals(ext) || "inc".equals(ext) || "sym".equals(ext)){
 					if (containsFilename((IFile) arg0, filename)){
 						if ("asm".equals(ext) || "s".equals(ext)){
@@ -453,11 +457,11 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 				int resourceType = resource.getType();
 
 				if (resourceType == IResource.FILE) {
-					String extension = resource.getFileExtension().toLowerCase();
-					if ((extension != null) && ( "asm".equals(extension) || "s".equals(extension))) {
+					String extension = resource.getFileExtension();
+					if ((extension != null) && ( "asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension))) {
 						if (!monitor.isCanceled())
 							compileFile((IFile) resource);
-					} else if ("inc".equalsIgnoreCase(extension) || "sym".equalsIgnoreCase(extension)){
+					} else if (extension != null && ("inc".equalsIgnoreCase(extension) || "sym".equalsIgnoreCase(extension))){
 						Map<String,IFile>srcs = new HashMap<String, IFile>();
 						
 						getAllIncluders((IFile)resource, new HashSet<String>(),srcs);
