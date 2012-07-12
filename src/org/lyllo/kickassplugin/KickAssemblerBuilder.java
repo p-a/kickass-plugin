@@ -21,13 +21,23 @@
  */ 
 package org.lyllo.kickassplugin;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.management.monitor.Monitor;
+
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -41,7 +51,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
@@ -54,6 +63,7 @@ import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 	private IPath[] srcFolders;
+	private IProgressMonitor monitor;
 
 	/**
 	 * {@inheritDoc}
@@ -65,6 +75,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 
+		this.monitor = monitor;
 		Activator.getConsole().bringConsoleToFront();
 		Activator.getConsole().println(Messages.BUILDING_TEXT_CONSOLE);
 		Activator.getConsole().println();
@@ -72,15 +83,13 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		createSrcIPaths();
 
 		try {
-			if (kind == IncrementalProjectBuilder.FULL_BUILD) {
+			IResourceDelta delta = getDelta(getProject());
+			if (kind == IncrementalProjectBuilder.FULL_BUILD
+					|| kind == IncrementalProjectBuilder.CLEAN_BUILD
+					|| delta == null) {
 				fullBuild(monitor);
 			} else {
-				IResourceDelta delta = getDelta(getProject());
-				if (delta == null || delta.getResource().getName().endsWith(".inc")) {
-					fullBuild(monitor);
-				} else {
-					incrementalBuild(delta, monitor);
-				}
+				incrementalBuild(delta, monitor);
 			}
 		} catch (CoreException ex){
 			Status status = new Status(Status.ERROR, Constants.PLUGIN_ID, "Problems while compiling", ex);
@@ -88,6 +97,109 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		}
 
 		return null;
+	}
+
+	private void getAllIncluders(IFile file, Set<String> visited, Map<String,IFile> srcs) {
+
+		if (visited.contains(file.getRawLocation().toOSString()) ||
+				(file.getParent() != null && visited.contains(file.getParent().getRawLocation().toOSString())))
+			return;
+
+		try {
+			monitor.subTask("Searching for resources with " + file.getName() + " as dependency");
+			IContainer container = file.getParent();
+			String filename = file.getName();
+
+			while (!monitor.isCanceled() && container!= null && container.getType() != IResource.ROOT){
+				SrcCollectingVisitor srcCollectingVisitor = new SrcCollectingVisitor(filename,visited,srcs);
+				for(IResource sibling: container.members()){
+					sibling.accept(srcCollectingVisitor,IResource.DEPTH_ZERO,IResource.NONE);
+				}
+				filename = container.getName()+"/"+filename;
+				container = container.getParent();
+			}
+
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private class SrcCollectingVisitor implements IResourceVisitor {
+
+		private String filename;
+		private Set<String> visited;
+		private Map<String, IFile> srcs;
+
+		public SrcCollectingVisitor(String filename, Set<String> visited, Map<String, IFile> srcs) {
+			this.filename = filename;
+			this.visited = visited;
+			this.srcs = srcs;
+		}
+
+		public boolean visit(IResource arg0) throws CoreException {
+
+			if (arg0 == null || arg0.getRawLocation() == null){
+				return false;
+			}
+			String tmp = arg0.getRawLocation().toOSString();
+			if (visited.contains(tmp)){
+				return false;
+			}
+			visited.add(tmp);
+
+			if (arg0.getType() == IResource.FOLDER){
+				if (matchingSourceFolder(arg0.getProjectRelativePath())){
+					SrcCollectingVisitor srcCollectingVisitor = new SrcCollectingVisitor("../"+filename, visited,srcs);
+					for (IResource child: ((IFolder)arg0).members()){
+						if (!monitor.isCanceled())
+							child.accept(srcCollectingVisitor,IResource.DEPTH_ZERO,IResource.NONE);
+					}
+				}
+			} 
+
+			if (arg0.getType() == IResource.FILE){
+				String ext = arg0.getFileExtension().toLowerCase();
+				if ("asm".equals(ext) || "s".equals(ext) || "inc".equals(ext) || "sym".equals(ext)){
+					if (containsFilename((IFile) arg0, filename)){
+						if ("asm".equals(ext) || "s".equals(ext)){
+							srcs.put(arg0.getRawLocation().toOSString(), (IFile)arg0);
+						} else {
+							
+							getAllIncluders((IFile) arg0, new HashSet<String>(),srcs);
+						}
+					}
+				} 
+			}
+
+			return true;
+		}
+
+		private boolean containsFilename(IFile arg0, String filename2) throws CoreException {
+
+			boolean retval = false;
+			BufferedReader br = new BufferedReader(new InputStreamReader(arg0.getContents(true)));
+			String line = null;
+			try {
+				while(!retval && (line = br.readLine()) != null){
+					if (line.trim().toLowerCase().startsWith(".import")){
+						retval = line.matches("^\\s*\\.import\\s+source\\s+\""+filename2+"\"");
+					}
+				}
+			} catch (IOException e) {
+			} finally {
+				if (br != null){
+					try {
+						br.close();
+					} catch (IOException e) {
+					}
+				}
+			}
+
+			return retval;
+		}
+
+
 	}
 
 	private void createSrcIPaths() {
@@ -135,14 +247,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		IProject project = getProject();
 		monitor.beginTask(Messages.BUILDING_TITLE, 100);
 		monitor.subTask(Messages.BUILDING_TEXT_COMPILE);
-		try {
-			delta.accept(new MyIncrementalBuildVisitor());
-		} catch (IllegalStateException ise){
-			Activator.getDefault().getLog().log(
-					new Status(Status.INFO, Constants.PLUGIN_ID, "full build required"));
-
-			fullBuild(monitor);
-		}
+		delta.accept(new MyIncrementalBuildVisitor(monitor));
 		monitor.done();
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 	}
@@ -157,12 +262,12 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 	private void compileFile(IFile file) throws CoreException {
 
 		String buildDir = ProjectPrefenceHelper.getBuildDir(getProject());
-		
+
 		String destdir = getProject().getLocationURI().getRawPath() + File.separator + buildDir;
 
 		//FIXME
 		IFolder destFolder = file.getProject().getFolder(buildDir);
-		
+
 		if (!destFolder.exists()){
 			destFolder.create(IResource.NONE, true, null);
 			destFolder.setDerived(true,null);
@@ -207,7 +312,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		List<String> libdirsArray = new ArrayList<String>();
 		libdirsArray.addAll(ProjectPrefenceHelper.getAbsoluteLibDirs(file.getProject()));
 		libdirsArray.addAll(Activator.getGlobalLibdirs());
-		
+
 		if ((compiler == null) || (compiler.trim().length() < 1)) {
 			return null;
 		}
@@ -333,9 +438,13 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 	 * @since 25.11.2005
 	 */
 	private class MyIncrementalBuildVisitor implements IResourceDeltaVisitor {
-		/**
-		 * {@inheritDoc}
-		 */
+
+		private IProgressMonitor monitor;
+
+		public MyIncrementalBuildVisitor(IProgressMonitor monitor){
+			this.monitor = monitor;
+		}
+
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			int deltaKind = delta.getKind();
 
@@ -343,19 +452,26 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 				IResource resource = delta.getResource();
 				int resourceType = resource.getType();
 
-				if (resourceType == IResource.PROJECT) {
+				if (resourceType == IResource.FILE) {
+					String extension = resource.getFileExtension().toLowerCase();
+					if ((extension != null) && ( "asm".equals(extension) || "s".equals(extension))) {
+						if (!monitor.isCanceled())
+							compileFile((IFile) resource);
+					} else if ("inc".equalsIgnoreCase(extension) || "sym".equalsIgnoreCase(extension)){
+						Map<String,IFile>srcs = new HashMap<String, IFile>();
+						
+						getAllIncluders((IFile)resource, new HashSet<String>(),srcs);
+						
+						for (IFile file: srcs.values()){
+							if (!monitor.isCanceled())
+								compileFile(file);
+						}
+					}
+				} else if (resourceType == IResource.PROJECT) {
 					return getProject().getName().equals(resource.getName());
 				} else if (resourceType == IResource.FOLDER) {
 					return matchingSourceFolder(resource.getProjectRelativePath());
-				} else if (resourceType == IResource.FILE) {
-					String extension = resource.getFileExtension();
-					if ((extension != null) && ( "asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension))) {
-						compileFile((IFile) resource);
-					} else if ("inc".equalsIgnoreCase(extension) || "sym".equalsIgnoreCase(extension)){
-						//TODO build only dependants
-						throw new IllegalStateException("include file changed, full rebuild required");
-					}
-				}
+				} 
 			}
 
 			return false;
