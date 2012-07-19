@@ -121,7 +121,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							Matcher matcher = pattern.matcher(line);
 
 							if (matcher.find()) {
-								labels.add(matcher.group(1));
+								labels.add(":"+matcher.group(1));
 							}
 						}
 					}
