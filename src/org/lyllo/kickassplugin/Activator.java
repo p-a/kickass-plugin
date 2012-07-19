@@ -28,7 +28,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.ISaveParticipant;
+import org.eclipse.core.resources.ISavedState;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -64,6 +71,8 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	private static OutputConsole console = new OutputConsole();
 
+	private static AutocompletionCollector autocompletionCollector = new AutocompletionCollector();
+
 	/**
 	 * The constructor.
 	 */
@@ -72,20 +81,38 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 	}
 
+	public AutocompletionCollector getAutoCompletionCollector(){
+		return autocompletionCollector;
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		plugin = this; // Nur wenn "plugin = null" bei "public void stop(BundleContext context)" wirklich notwendig ist 
+		plugin = this; 
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(autocompletionCollector);
+		
+		autocompletionCollector.init();
+		
+		 ISaveParticipant saveParticipant = new KickassSaveParticipant();
+		 ISavedState lastState =
+		      ResourcesPlugin.getWorkspace().addSaveParticipant(Constants.PLUGIN_ID, saveParticipant);
+		   if (lastState != null) {
+		      lastState.processResourceChangeEvents(autocompletionCollector);
+		   }		
+		
 	}
+	
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
-		plugin = null;  // ??? Warum notwendig, wird doch auch bei "public void start(BundleContext context)" NICHT initialisiert
+		plugin = null; 
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(autocompletionCollector);
+		
 	}
 
 	/**

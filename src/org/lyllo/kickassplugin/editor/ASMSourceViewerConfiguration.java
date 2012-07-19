@@ -73,8 +73,8 @@ public class ASMSourceViewerConfiguration extends SourceViewerConfiguration {
    */
   public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
     ContentAssistant assistant = new ContentAssistant();
-    assistant.setContentAssistProcessor(new ASMCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
-    assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+    assistant.setContentAssistProcessor(new ASMCompletionProcessor(editor), IDocument.DEFAULT_CONTENT_TYPE);
+    assistant.setContextInformationPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
     assistant.enableAutoActivation(true);
     assistant.enableAutoInsert(true);
     assistant.setAutoActivationDelay(500);

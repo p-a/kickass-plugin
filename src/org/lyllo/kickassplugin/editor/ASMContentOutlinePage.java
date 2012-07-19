@@ -22,6 +22,8 @@
 package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +62,8 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 	private ASMEditor editor;
 
+	private ContentProvider contentProvider;
+
 	/**
 	 * The constructor.
 	 * 
@@ -67,6 +71,11 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 	 */
 	public ASMContentOutlinePage(ASMEditor editor) {
 		this.editor = editor;
+		contentProvider = new ContentProvider();
+	}
+
+	public List<String> getLabels() {
+		return this.contentProvider.getLabels();
 	}
 
 	/**
@@ -155,7 +164,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 		super.createControl(parent);
 
 		TreeViewer viewer = getTreeViewer();
-		viewer.setContentProvider(new ContentProvider());
+		viewer.setContentProvider(this.contentProvider);
 		viewer.setLabelProvider(new ASMLabelProvider());
 		viewer.addSelectionChangedListener(this);
 		viewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
@@ -212,6 +221,29 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 		private TreeObject labelsAndSegments = new TreeObject(Messages.TREEOBJECT_LABEL_NAME, Constants.TREEOBJECT_TYPE_ROOT_LABEL);
 
+		public List<String> getLabels(){
+
+			List<String> labelList = new ArrayList<String>();
+
+			Object[] children = labelsAndSegments.getChildren();
+			if (children != null){
+				for (Object segment : children){
+					if (((TreeObject)segment).getType()==Constants.TREEOBJECT_TYPE_LABEL){
+						labelList.add(segment.toString().replaceAll(" = .*", ""));
+					}else {
+						Object[] labels = ((TreeObject) segment).getChildren();
+						if (labels !=null){
+							for (Object label: labels){
+								labelList.add(label.toString().replaceAll(" = .*", ""));
+							}
+						}
+					}
+				}
+			}
+
+			Collections.sort(labelList);
+			return labelList;
+		}
 		/**
 		 * {@inheritDoc}
 		 */
@@ -391,7 +423,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						stringLineLower = stringLine.toLowerCase();
 
 						if (stringLineLower.indexOf(".function") > -1) {
-							pattern = Pattern.compile("\\A\\s*.function\\s*(\\w+\\s*\\(.*\\)).*$");
+							pattern = Constants.FUNCTION_PATTERN;
 							matcher = pattern.matcher(stringLineLower);
 
 							if (matcher.find()) {
@@ -403,7 +435,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 
 						if (stringLineLower.indexOf(".macro") > -1) {
-							pattern = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\(\\w+\\)).*$");
+							pattern = Constants.MACRO_PATTERN;
 							matcher = pattern.matcher(stringLineLower);
 
 							if (matcher.find()) {
@@ -414,7 +446,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 
 						if (stringLineLower.indexOf(".label") > -1) {
-							pattern = Pattern.compile("\\A\\s*\\.label\\s+(\\w+\\s*=\\s*\\S+).*$");
+							pattern = Constants.LABEL_PATTERN;
 							matcher = pattern.matcher(stringLineLower);
 
 							if (matcher.find()) {
@@ -425,7 +457,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 
 						if (stringLineLower.indexOf(":") > -1) {
-							pattern = Pattern.compile("\\A\\s*\\.*(\\w+):\\s+.*$");
+							pattern = Constants.LABEL_PATTERN_ALT;
 							matcher = pattern.matcher(stringLineLower);
 
 							if (matcher.find()) {
@@ -436,7 +468,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 								child = new TreeObject(stringLine.substring(matchStart, matchEnd), Constants.TREEOBJECT_TYPE_LABEL);
 								child.setData(new Position(startOffset, length));
-								
+
 								TreeObject node = labelsAndSegments;
 								int sz = labelsAndSegments.getChildren().length;
 								if (sz > 0 && ((TreeObject)labelsAndSegments.getChild(sz-1)).getType() == Constants.TREEOBJECT_TYPE_SEGMENT){
@@ -447,7 +479,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 
 						if (stringLineLower.indexOf(".pc") > -1 || stringLineLower.indexOf(".pseudopc") > -1
-								 || stringLineLower.indexOf(".namespace") > -1) {
+								|| stringLineLower.indexOf(".namespace") > -1) {
 							child = new TreeObject(stringLineLower.replace("{","").trim(), Constants.TREEOBJECT_TYPE_SEGMENT);
 							child.setData(new Position(lineOffset, 1));
 							labelsAndSegments.addChild(child);

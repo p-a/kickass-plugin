@@ -216,7 +216,6 @@ public class ASMEditor extends TextEditor {
 
     viewer.setDefaultPrefixes(new String[] { "//" }, IDocument.DEFAULT_CONTENT_TYPE);
     viewer.setDefaultPrefixes(new String[] { "//" }, Constants.PARTITION_COMMENT_SINGLE);
-
     return viewer;
   }
 
@@ -262,4 +261,8 @@ public class ASMEditor extends TextEditor {
 
     annotationModel.modifyAnnotations(removeAnnotations, newAnnotations, new Annotation[] {});
   }
+
+public ASMContentOutlinePage getOutline() {
+	return this.contentOutlinePage;
+}
 }

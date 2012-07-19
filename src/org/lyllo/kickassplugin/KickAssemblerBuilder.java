@@ -71,10 +71,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 
 		this.monitor = monitor;
-		Activator.getConsole().bringConsoleToFront();
-		Activator.getConsole().println(Messages.BUILDING_TEXT_CONSOLE);
-		Activator.getConsole().println();
-
+	
 		createSrcIPaths();
 
 		try {
