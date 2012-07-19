@@ -33,6 +33,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.Position;
+import org.lyllo.kickassplugin.editor.TreeObject;
 
 public class AutocompletionCollector implements IResourceChangeListener, IResourceDeltaVisitor, IResourceVisitor{
 
@@ -112,7 +114,16 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 									labels.add(matcher.group(1));
 								}
 							}
-						}   
+						}
+						
+						if (line.toLowerCase().indexOf(".macro") > -1) {
+							Pattern pattern = Constants.MACRO_PATTERN;
+							Matcher matcher = pattern.matcher(line);
+
+							if (matcher.find()) {
+								labels.add(matcher.group(1));
+							}
+						}
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

@@ -133,6 +133,15 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 		count = addToProposalList(region, proposalList, offset, count,
 				smprefix, item, editor.getOutline().getLabels(),null);
 
+		List<String> macros = new ArrayList<String>();
+		{
+			List<String> tempMacros = editor.getOutline().getMacros();
+			for (String m: tempMacros)
+				macros.add(":"+m);
+		}
+		count = addToProposalList(region, proposalList, offset, count,
+				smprefix, item, macros ,null);
+
 		IFile currentIFile = getCurrentIFile();
 		String projectName = currentIFile.getProject().getName();
 		if (currentIFile != null){
@@ -171,7 +180,7 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 			String smprefix, String item, List<String> labels, String key) {
 		for (String label: labels){
 
-			if (label.startsWith(smprefix)){
+			if (label.toLowerCase().startsWith(smprefix)){
 				proposalList.add(new CompletionProposal(label, offset, region.getLength(), item.length(), labelImage,
 						label + (key == null ? "" :  key), null, null));
 				count++;

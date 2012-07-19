@@ -275,9 +275,9 @@ public class Constants {
 	public final static Pattern LABEL_PATTERN = Pattern.compile("\\A\\s*\\.label\\s+(\\w+\\s*=\\s*\\S+).*$", Pattern.CASE_INSENSITIVE);
 	public final static Pattern LABEL_PATTERN_ALT = Pattern.compile("\\A\\s*(\\w+):.*$", Pattern.CASE_INSENSITIVE);
 	
-	public final static Pattern MACRO_PATTERN = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\(\\w+\\)).*$", Pattern.CASE_INSENSITIVE);
+	public final static Pattern MACRO_PATTERN = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
 
-	public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\A\\s*.function\\s*(\\w+\\s*\\(.*\\)).*$", Pattern.CASE_INSENSITIVE);
+	public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\A\\s*.function\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
 	
 	public static final Pattern FILENAMESPACE_PATTERN = Pattern.compile("\\A\\s*.filenamespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 	public static final Pattern NAMESPACE_PATTERN = Pattern.compile("\\A\\s*.namespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);

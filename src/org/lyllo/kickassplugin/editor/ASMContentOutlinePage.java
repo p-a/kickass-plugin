@@ -22,6 +22,7 @@
 package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -77,7 +78,9 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 	public List<String> getLabels() {
 		return this.contentProvider.getLabels();
 	}
-
+	public List<String> getMacros() {
+		return this.contentProvider.getMacros();
+	}
 	/**
 	 * Sets the input for the outlinepage.
 	 * 
@@ -223,26 +226,49 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 		public List<String> getLabels(){
 
-			List<String> labelList = new ArrayList<String>();
+			List<String> cleanLabels = new ArrayList<String>();
+			{
+				Object[] children = labelsAndSegments.getChildren();
+				List<String> list = getChildrenAsList(Constants.TREEOBJECT_TYPE_LABEL,children);
 
-			Object[] children = labelsAndSegments.getChildren();
+				Pattern p = Pattern.compile("//s*=//s*.*");
+				for (String s: list){
+					cleanLabels.add(p.matcher(s).replaceAll(""));
+				}
+			}
+			Collections.sort(cleanLabels);
+			return cleanLabels;
+		}
+
+		protected List<String> getChildrenAsList(int typeFilter,
+				Object[] children) {
+			List<String> list = new ArrayList<String>();
 			if (children != null){
 				for (Object segment : children){
-					if (((TreeObject)segment).getType()==Constants.TREEOBJECT_TYPE_LABEL){
-						labelList.add(segment.toString().replaceAll(" = .*", ""));
+					if (((TreeObject)segment).getType()==typeFilter){
+						list.add(segment.toString());
 					}else {
 						Object[] labels = ((TreeObject) segment).getChildren();
 						if (labels !=null){
 							for (Object label: labels){
-								labelList.add(label.toString().replaceAll(" = .*", ""));
+								list.add(label.toString());
 							}
 						}
 					}
 				}
 			}
 
-			Collections.sort(labelList);
-			return labelList;
+			return list;
+
+		}
+
+		public List<String> getMacros() {
+			
+			Object[] children = macros.getChildren();
+			List<String> list = getChildrenAsList(Constants.TREEOBJECT_TYPE_MACRO,children);
+			
+			Collections.sort(list);
+			return list;
 		}
 		/**
 		 * {@inheritDoc}
@@ -424,7 +450,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 						if (stringLineLower.indexOf(".function") > -1) {
 							pattern = Constants.FUNCTION_PATTERN;
-							matcher = pattern.matcher(stringLineLower);
+							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
 								child = new TreeObject(matcher.group(1), Constants.TREEOBJECT_TYPE_PROCEDURE);
@@ -436,7 +462,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 						if (stringLineLower.indexOf(".macro") > -1) {
 							pattern = Constants.MACRO_PATTERN;
-							matcher = pattern.matcher(stringLineLower);
+							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
 								child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_MACRO);
@@ -447,7 +473,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 						if (stringLineLower.indexOf(".label") > -1) {
 							pattern = Constants.LABEL_PATTERN;
-							matcher = pattern.matcher(stringLineLower);
+							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
 								child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_LABEL);
@@ -458,7 +484,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 						if (stringLineLower.indexOf(":") > -1) {
 							pattern = Constants.LABEL_PATTERN_ALT;
-							matcher = pattern.matcher(stringLineLower);
+							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
 								matchStart = matcher.start(1);
