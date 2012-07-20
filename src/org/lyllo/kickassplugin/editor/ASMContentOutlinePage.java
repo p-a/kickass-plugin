@@ -81,6 +81,13 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 	public List<String> getMacros() {
 		return this.contentProvider.getMacros();
 	}
+	public List<String> getConsts() {
+		return this.contentProvider.getConsts();
+	}
+	public List<String> getFunctions() {
+		return this.contentProvider.getFunctions();
+	}
+	
 	/**
 	 * Sets the input for the outlinepage.
 	 * 
@@ -215,6 +222,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 	 */
 	private class ContentProvider implements ITreeContentProvider {
 
+
 		private IEditorInput input;
 
 		private TreeObject functions = new TreeObject(Messages.TREEOBJECT_PROCEDURE_NAME,
@@ -222,22 +230,57 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 		private TreeObject macros = new TreeObject(Messages.TREEOBJECT_MACRO_NAME, Constants.TREEOBJECT_TYPE_ROOT_MACRO);
 
+		private TreeObject consts = new TreeObject(Messages.TREEOBJECT_CONST_NAME, Constants.TREEOBJECT_TYPE_ROOT_CONST);
+
 		private TreeObject labelsAndSegments = new TreeObject(Messages.TREEOBJECT_LABEL_NAME, Constants.TREEOBJECT_TYPE_ROOT_LABEL);
 
 		public List<String> getLabels(){
 
+			List<String> list = removeEqualSigns(getChildren(labelsAndSegments, Constants.TREEOBJECT_TYPE_LABEL));
+			Collections.sort(list);
+
+			return list;
+		}
+
+		public List<String> getConsts(){
+
+			List<String> list = removeEqualSigns(getChildren(consts, Constants.TREEOBJECT_TYPE_CONST));
+			Collections.sort(list);
+
+			return list;
+		}
+		
+		public List<String> getFunctions() {
+		
+			List<String> list = getChildren(functions, Constants.TREEOBJECT_TYPE_PROCEDURE);
+			Collections.sort(list);
+			return list;
+		}
+
+		
+		public List<String> getMacros() {
+
+			List<String> list = getChildren(macros, Constants.TREEOBJECT_TYPE_MACRO);
+
+			Collections.sort(list);
+			return list;
+		}
+
+		protected List<String> removeEqualSigns(List<String> list) {
 			List<String> cleanLabels = new ArrayList<String>();
 			{
-				Object[] children = labelsAndSegments.getChildren();
-				List<String> list = getChildrenAsList(Constants.TREEOBJECT_TYPE_LABEL,children);
 
-				Pattern p = Pattern.compile("//s*=//s*.*");
+				Pattern p = Constants.EQUALS_PATTERN;
 				for (String s: list){
 					cleanLabels.add(p.matcher(s).replaceAll(""));
 				}
 			}
-			Collections.sort(cleanLabels);
 			return cleanLabels;
+		}
+
+	
+		private List<String> getChildren(TreeObject treeObject, int type){
+			return getChildrenAsList(type, treeObject.getChildren());
 		}
 
 		protected List<String> getChildrenAsList(int typeFilter,
@@ -262,14 +305,8 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 		}
 
-		public List<String> getMacros() {
-			
-			Object[] children = macros.getChildren();
-			List<String> list = getChildrenAsList(Constants.TREEOBJECT_TYPE_MACRO,children);
-			
-			Collections.sort(list);
-			return list;
-		}
+
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -320,6 +357,10 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 				if (macros.getChildren().length > 0) {
 					objects.add(macros);
+				}
+				
+				if (consts.getChildren().length >0) {
+					objects.add(consts);
 				}
 
 				return objects.toArray(new Object[0]);
@@ -372,6 +413,10 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 			if (labelsAndSegments.equals(treeobj)) {
 				return labelsAndSegments;
 			}
+			
+			if (consts.equals(treeobj)){
+				return consts;
+			}
 
 			int i = 0;
 			TreeObject to = null;
@@ -410,6 +455,19 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 					}
 				}
 			}
+			
+			o = consts.getChildren();
+			
+			for (i = 0; i < o.length; i++) {
+				if (o[i] instanceof TreeObject) {
+					to = (TreeObject) o[i];
+
+					if (to.equals(treeobj)) {
+						return to;
+					}
+				}
+			}
+			
 
 			return null;
 		}
@@ -421,7 +479,8 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 			functions.setChildren(null);
 			macros.setChildren(null);
 			labelsAndSegments.setChildren(null);
-
+			consts.setChildren(null);
+			
 			IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
 
 			if (document != null) {
@@ -447,6 +506,18 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						stringLine = document.get(lineOffset, linelen);
 
 						stringLineLower = stringLine.toLowerCase();
+
+						if (stringLineLower.contains(".const")) {
+							pattern = Constants.CONST_PATTERN;
+							matcher = pattern.matcher(stringLine);
+							
+							if (matcher.matches()){
+								child = new TreeObject(matcher.group(1)+matcher.group(2),Constants.TREEOBJECT_TYPE_CONST);
+								child.setData(new Position(lineOffset,1));
+								
+								consts.addChild(child);
+							}
+						}
 						
 						if (stringLineLower.indexOf(".function") > -1) {
 							pattern = Constants.FUNCTION_PATTERN;
@@ -466,6 +537,17 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 							if (matcher.find()) {
 								child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_MACRO);
+								child.setData(new Position(lineOffset, 1));
+								macros.addChild(child);
+							}
+						}
+
+						if (stringLineLower.indexOf(".pseudocommand") > -1) {
+							pattern = Constants.PSEUDOCOMMAND_PATTERN;
+							matcher = pattern.matcher(stringLine);
+
+							if (matcher.find()) {
+								child = new TreeObject(matcher.group(1).replaceAll("\\{.*$", "").trim(), Constants.TREEOBJECT_TYPE_MACRO);
 								child.setData(new Position(lineOffset, 1));
 								macros.addChild(child);
 							}
@@ -497,7 +579,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 							}
 						}
-						
+
 						if (child != null){
 							TreeObject node = labelsAndSegments;
 							int sz = labelsAndSegments.getChildren().length;
@@ -505,15 +587,15 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 								node = ((TreeObject) labelsAndSegments.getChild(sz-1));
 							}
 							node.addChild(child);
-						
+
 						}
 
-						if (stringLineLower.indexOf(".pc") > -1 || stringLineLower.indexOf(".pseudopc") > -1) {
+						if (stringLineLower.indexOf(".pc") > -1 || stringLineLower.indexOf(".pseudopc")  > -1) {
 							child = new TreeObject(stringLineLower.replace("{","").trim(), Constants.TREEOBJECT_TYPE_SEGMENT);
 							child.setData(new Position(lineOffset, 1));
 							labelsAndSegments.addChild(child);
 						}
-						
+
 					}
 					catch (BadLocationException e) {
 						Activator.getDefault().getLog().log(
@@ -524,4 +606,5 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 			}
 		}
 	}
+
 }

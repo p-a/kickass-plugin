@@ -36,7 +36,7 @@ public class Messages extends NLS {
 	 */
 	private static final String BUNDLE_NAME = "org.lyllo.kickassplugin.messages";
 
-	public static String TEXTCOLOR_FUNCTION_NAME;
+		public static String TEXTCOLOR_FUNCTION_NAME;
 	
 	public static String TEXTCOLOR_CLASS_NAME;
 
@@ -216,6 +216,8 @@ public class Messages extends NLS {
 	 * Text for root segment name.
 	 */
 	public static String TREEOBJECT_SEGMENT_NAME;
+
+	public static String TREEOBJECT_CONST_NAME;
 
 	/**
 	 * Text for build monitor title.

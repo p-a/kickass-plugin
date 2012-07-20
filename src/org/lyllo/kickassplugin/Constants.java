@@ -233,6 +233,11 @@ public class Constants {
 	 */
 	public static final int TREEOBJECT_TYPE_SEGMENT = 8;
 
+	public static final int TREEOBJECT_TYPE_ROOT_CONST = 9;
+
+	public static final int TREEOBJECT_TYPE_CONST = 10;
+
+
 	// Launch
 
 	/**
@@ -277,17 +282,24 @@ public class Constants {
 	public final static Pattern LABEL_PATTERN_ALT = Pattern.compile("\\A\\s*(\\w+):.*$", Pattern.CASE_INSENSITIVE);
 	
 	public final static Pattern MACRO_PATTERN = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
+	public final static Pattern PSEUDOCOMMAND_PATTERN = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)\\{?.*$", Pattern.CASE_INSENSITIVE);
 
 	public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\A\\s*.function\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
 	
 	public static final Pattern FILENAMESPACE_PATTERN = Pattern.compile("\\A\\s*.filenamespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 	public static final Pattern NAMESPACE_PATTERN = Pattern.compile("\\A\\s*.namespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 
-	public static final QualifiedName  LABELS_SESSION_KEY = new QualifiedName("LABELS", "LABELS");
-	public static final QualifiedName  MACROS_SESSION_KEY = new QualifiedName("MACROS", "MACROS");
-	public static final QualifiedName  IMPORTS_SESSION_KEY = new QualifiedName("IMPORTS", "IMPORTS");
+	public static final QualifiedName LABELS_SESSION_KEY = new QualifiedName("LABELS", "LABELS");
+	public static final QualifiedName MACROS_SESSION_KEY = new QualifiedName("MACROS", "MACROS");
+	public static final QualifiedName IMPORTS_SESSION_KEY = new QualifiedName("IMPORTS", "IMPORTS");
+	public static final QualifiedName CONST_SESSION_KEY = new QualifiedName("CONST",  "CONST");
+	public static final QualifiedName FUNCTIONS_SESSION_KEY = new QualifiedName("FUNCTIONS", "FUNCTIONS");
 
-	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*$", Pattern.CASE_INSENSITIVE);
+	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*\\s?$", Pattern.CASE_INSENSITIVE);
+
+	public static final Pattern CONST_PATTERN = Pattern.compile("^\\.const\\s+(\\w+)(\\s*=\\s*\\w+)\\s*.*\\s?$",Pattern.CASE_INSENSITIVE);
+	public static final Pattern EQUALS_PATTERN = Pattern.compile("//s*=//s*.*");
+
 
 
 }

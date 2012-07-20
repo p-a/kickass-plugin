@@ -69,9 +69,15 @@ import org.lyllo.kickassplugin.ui.OutputConsole;
 public class ASMCompletionProcessor implements IContentAssistProcessor {
 
 	private static Image labelImage;
-
+    private static Image macroImage;
+    private static Image defaultImage;
+    private static Image procedureImage;
+    
 	static {
 		labelImage = new Image(Display.getCurrent(),  Activator.getFilePathFromPlugin("tree_label.gif"));
+		macroImage = new Image(Display.getCurrent(), Activator.getFilePathFromPlugin("tree_macro.gif"));
+		defaultImage = new Image(Display.getCurrent(), Activator.getFilePathFromPlugin("tree_default.gif"));
+		procedureImage = new Image(Display.getCurrent(), Activator.getFilePathFromPlugin("tree_procedure.gif"));
 	}
 
 	private ASMEditor editor;
@@ -136,7 +142,7 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 
 		/* Add things from outline, which is constantly updated */
 		addToProposalList(region, proposalList, offset,
-				smprefix, editor.getOutline().getLabels(),null);
+				smprefix, editor.getOutline().getLabels(),null,labelImage);
 
 		List<String> macros = new ArrayList<String>();
 		{
@@ -145,7 +151,13 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 				macros.add(":"+m);
 		}
 		addToProposalList(region, proposalList, offset,
-				smprefix, macros ,null);
+				smprefix, macros ,null,macroImage);
+
+		addToProposalList(region, proposalList, offset,
+				smprefix, editor.getOutline().getConsts() ,null,defaultImage);
+
+		addToProposalList(region, proposalList, offset,
+				smprefix, editor.getOutline().getFunctions() ,null,procedureImage);
 
 		
 		IFile currentIFile = getCurrentIFile();
@@ -203,11 +215,21 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 		try {
 			@SuppressWarnings("unchecked")
 			List<String> labels = (List<String>) file.getSessionProperty(Constants.LABELS_SESSION_KEY);
-			addToProposalList(region, proposalList, offset, smprefix, labels, " ["+file.getName()+"]");
+			addToProposalList(region, proposalList, offset, smprefix, labels, " ["+file.getName()+"]",labelImage);
+		
 			@SuppressWarnings("unchecked")
 			List<String> macros = (List<String>) file.getSessionProperty(Constants.MACROS_SESSION_KEY);
-			addToProposalList(region, proposalList, offset, smprefix, macros, " ["+file.getName()+"]");
+			addToProposalList(region, proposalList, offset, smprefix, macros, " ["+file.getName()+"]",macroImage);
 		
+			@SuppressWarnings("unchecked")
+			List<String> constig = (List<String>) file.getSessionProperty(Constants.CONST_SESSION_KEY);
+			addToProposalList(region, proposalList, offset, smprefix, constig, " ["+file.getName()+"]",defaultImage);
+		
+			@SuppressWarnings("unchecked")
+			List<String> functions = (List<String>) file.getSessionProperty(Constants.FUNCTIONS_SESSION_KEY);
+			addToProposalList(region, proposalList, offset, smprefix, functions, " ["+file.getName()+"]",procedureImage);
+		
+			
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
@@ -216,10 +238,14 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 
 	protected void addToProposalList(Region region,
 			ArrayList<ICompletionProposal> proposalList, int offset, 
-			String smprefix, List<String> labels, String key) {
+			String smprefix, List<String> labels, String key, Image image) {
+		
+		if (labels == null)
+			return;
+		
 		for (String label: labels){
 			if (label.toLowerCase().startsWith(smprefix)){
-				proposalList.add(new CompletionProposal(label, offset, region.getLength(), 0, labelImage,
+				proposalList.add(new CompletionProposal(label, offset, region.getLength(), 0, image,
 						label + (key == null ? "" :  key), null, null));
 			}
 		}

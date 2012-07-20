@@ -42,7 +42,6 @@ import org.lyllo.kickassplugin.editor.TreeObject;
 public class AutocompletionCollector implements IResourceChangeListener, IResourceDeltaVisitor, IResourceVisitor{
 
 	public void resourceChanged(IResourceChangeEvent event) {
-		IResource resource = event.getResource();
 
 		switch (event.getType()){
 		case IResourceChangeEvent.PRE_DELETE:
@@ -93,7 +92,10 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 				BufferedReader reader = null;
 				List<String> labels = new ArrayList<String>();
+				List<String> constig = new ArrayList<String>();
 				List<String> macros = new ArrayList<String>();
+				List<String> functions = new ArrayList<String>();
+				
 				Set<String> imports = new HashSet<String>();
 				
 				try {
@@ -121,6 +123,34 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							}
 						}
 						
+						if (line.toLowerCase().indexOf(".pseudocommand") > -1) {
+							Pattern pattern = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)$", Pattern.CASE_INSENSITIVE);
+							Matcher matcher = pattern.matcher(line);
+
+							if (matcher.matches()) {
+								macros.add(":"+matcher.group(1).replaceAll("\\{.*$", "").trim());
+							}
+						}
+						
+						if (line.toLowerCase().indexOf(".const") > -1) {
+							Pattern pattern = Constants.CONST_PATTERN;
+							Matcher matcher = pattern.matcher(line);
+
+							if (matcher.matches()) {
+								constig.add(matcher.group(1));
+							}
+						}
+						
+						if (line.toLowerCase().indexOf(".function") > -1) {
+							Pattern pattern = Constants.FUNCTION_PATTERN;
+							Matcher matcher = pattern.matcher(line);
+
+							if (matcher.find()) {
+								functions.add(matcher.group(1));
+							}
+						}
+
+						
 						if (line.toLowerCase().indexOf(".import") > -1) {
 							Pattern pattern = Constants.IMPORT_SOURCE_PATTERN;
 							Matcher matcher = pattern.matcher(line);
@@ -147,7 +177,13 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 				Collections.sort(macros);
 				file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
-
+				
+				Collections.sort(constig);
+				file.setSessionProperty(Constants.CONST_SESSION_KEY, constig);
+				
+				Collections.sort(functions);
+				file.setSessionProperty(Constants.FUNCTIONS_SESSION_KEY, functions);
+				
 				file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
 				
 				return Status.OK_STATUS;
