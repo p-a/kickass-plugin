@@ -6,8 +6,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -27,6 +29,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -38,18 +41,11 @@ import org.lyllo.kickassplugin.editor.TreeObject;
 
 public class AutocompletionCollector implements IResourceChangeListener, IResourceDeltaVisitor, IResourceVisitor{
 
-	private Map<String,Map<String,List<String>>> data = new ConcurrentHashMap<String, Map<String,List<String>>>();
-
-	public Map<String,List<String>> getLabelsForProject(IProject project){
-		return data.get(project.getName());
-	}
-
 	public void resourceChanged(IResourceChangeEvent event) {
 		IResource resource = event.getResource();
 
 		switch (event.getType()){
 		case IResourceChangeEvent.PRE_DELETE:
-			data.remove(resource.getProject().getName());
 			break;
 		case IResourceChangeEvent.POST_CHANGE:
 		case IResourceChangeEvent.POST_BUILD:
@@ -73,10 +69,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 		IResource resource = delta.getResource();
 		
-		String project = resource.getProject().getName();
-
 		if (delta.getKind() == IResourceDelta.REMOVED){
-			data.get(project).remove(resource.getFullPath().toOSString());
 			return true;
 		}  
 
@@ -100,6 +93,9 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 				BufferedReader reader = null;
 				List<String> labels = new ArrayList<String>();
+				List<String> macros = new ArrayList<String>();
+				Set<String> imports = new HashSet<String>();
+				
 				try {
 					reader = new BufferedReader(new InputStreamReader(file.getContents(true)));
 					String line = null;
@@ -121,9 +117,20 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							Matcher matcher = pattern.matcher(line);
 
 							if (matcher.find()) {
-								labels.add(":"+matcher.group(1));
+								macros.add(":"+matcher.group(1));
 							}
 						}
+						
+						if (line.toLowerCase().indexOf(".import") > -1) {
+							Pattern pattern = Constants.IMPORT_SOURCE_PATTERN;
+							Matcher matcher = pattern.matcher(line);
+							
+							if (matcher.matches()) {
+								IPath importPath = file.getParent().getProjectRelativePath().append(matcher.group(1));
+								imports.add(importPath.toString());
+							}
+						}
+
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -136,11 +143,13 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 					}
 				}
 				Collections.sort(labels);
-				Map<String, List<String>> map = data.get(project);
-				if (map != null){
-					map.put(file.getLocation().toOSString(), labels);
-				}
+				file.setSessionProperty(Constants.LABELS_SESSION_KEY, labels);
 
+				Collections.sort(macros);
+				file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
+
+				file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
+				
 				return Status.OK_STATUS;
 			}
 		};
@@ -172,15 +181,11 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 		String project = resource.getProject().getName();
 
-		if (!data.containsKey(project)){
-			data.put(project, new ConcurrentHashMap<String, List<String>>());
-
-		}
-
 		if (resource.getType() != IResource.FILE)
 			return true;
 
 		IFile file = (IFile) resource;
+		
 		String ext = file.getFileExtension();
 		if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches())
 			scanfile(file, project);

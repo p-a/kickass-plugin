@@ -22,10 +22,16 @@
 package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
@@ -51,6 +57,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.lyllo.kickassplugin.Activator;
 import org.lyllo.kickassplugin.Constants;
+import org.lyllo.kickassplugin.ui.OutputConsole;
 
 
 /**
@@ -68,7 +75,6 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 	}
 
 	private ASMEditor editor;
-
 
 	public ASMCompletionProcessor(ASMEditor editor) {
 		this.editor = editor;
@@ -126,12 +132,11 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 		ArrayList<ICompletionProposal> proposalList = new ArrayList<ICompletionProposal>();
 
 		int offset = region.getOffset();
-		int count = 0;
 		String smprefix = prefix.toLowerCase();
-		String item = "";
 
-		count = addToProposalList(region, proposalList, offset, count,
-				smprefix, item, editor.getOutline().getLabels(),null);
+		/* Add things from outline, which is constantly updated */
+		addToProposalList(region, proposalList, offset,
+				smprefix, editor.getOutline().getLabels(),null);
 
 		List<String> macros = new ArrayList<String>();
 		{
@@ -139,55 +144,85 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 			for (String m: tempMacros)
 				macros.add(":"+m);
 		}
-		count = addToProposalList(region, proposalList, offset, count,
-				smprefix, item, macros ,null);
+		addToProposalList(region, proposalList, offset,
+				smprefix, macros ,null);
 
+		
 		IFile currentIFile = getCurrentIFile();
-		String projectName = currentIFile.getProject().getName();
-		if (currentIFile != null){
-			
-			Map<String,List<String>> temp = Activator.getDefault().getAutoCompletionCollector().getLabelsForProject(
-					currentIFile.getProject());
-			if (temp != null){
-				for (String key: temp.keySet()){
-					if (!key.equals(currentIFile.getLocation().toOSString())){
-						int dot = key.indexOf('.');
-						if (dot > -1 && !key.endsWith(".")){
-							String ext = key.substring(dot+1);
-							if (Constants.EXTENSION_PATTERN_INCLUDES.matcher(ext).matches()){
-								List<String> list = temp.get(key);
-								key = " [" + key.substring(key.indexOf(projectName)+projectName.length()+1)+"]";
-								count += addToProposalList(region, proposalList, offset, count, smprefix, item, list, key);
-							}
-						}
+		if (currentIFile == null)
+			return null;
 
-					}
-				}
-			}
+		IProject project = currentIFile.getProject();
 
-		}
+		addDependencyItems(region, proposalList, offset, smprefix,
+				currentIFile, project, new HashSet<String>());
 
-		if (count == 0) {
+		if (proposalList.isEmpty()) {
 			return null;
 		}
-
 
 		return proposalList.toArray(new ICompletionProposal[0]);
 	}
 
-	protected int addToProposalList(Region region,
-			ArrayList<ICompletionProposal> proposalList, int offset, int count,
-			String smprefix, String item, List<String> labels, String key) {
-		for (String label: labels){
+	@SuppressWarnings("unchecked")
+	protected void addDependencyItems(Region region,
+			ArrayList<ICompletionProposal> proposalList, int offset,
+			String smprefix, IFile currentIFile, IProject project, HashSet<String> visited) {
+		
+		Set<String> imports = null;
+		try {
+			imports = (Set<String>) currentIFile.getSessionProperty(Constants.IMPORTS_SESSION_KEY);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 
-			if (label.toLowerCase().startsWith(smprefix)){
-				proposalList.add(new CompletionProposal(label, offset, region.getLength(), item.length(), labelImage,
-						label + (key == null ? "" :  key), null, null));
-				count++;
+		if (imports != null){
 
+			Iterator<String> it = imports.iterator();
+			while (it.hasNext()){
+				String filename = it.next();
+				IResource member = project.findMember(filename);
+				if (member.getType() == IResource.FILE && member != null && member.exists() && member.isAccessible()){
+					IFile file = (IFile) member;
+					if (!visited.contains(file.getLocation().toOSString())){
+						visited.add(file.getLocation().toOSString());
+						addToProposalList(region, proposalList, offset, smprefix, file );
+						//Recurse
+						addDependencyItems(region, proposalList, offset, smprefix, file, project, visited);
+					}
+				} else {
+					it.remove();
+				}
 			}
 		}
-		return count;
+	}
+
+	private void addToProposalList(Region region,
+			ArrayList<ICompletionProposal> proposalList, int offset, String smprefix, IFile file) {
+		
+		try {
+			@SuppressWarnings("unchecked")
+			List<String> labels = (List<String>) file.getSessionProperty(Constants.LABELS_SESSION_KEY);
+			addToProposalList(region, proposalList, offset, smprefix, labels, " ["+file.getName()+"]");
+			@SuppressWarnings("unchecked")
+			List<String> macros = (List<String>) file.getSessionProperty(Constants.MACROS_SESSION_KEY);
+			addToProposalList(region, proposalList, offset, smprefix, macros, " ["+file.getName()+"]");
+		
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	protected void addToProposalList(Region region,
+			ArrayList<ICompletionProposal> proposalList, int offset, 
+			String smprefix, List<String> labels, String key) {
+		for (String label: labels){
+			if (label.toLowerCase().startsWith(smprefix)){
+				proposalList.add(new CompletionProposal(label, offset, region.getLength(), 0, labelImage,
+						label + (key == null ? "" :  key), null, null));
+			}
+		}
 	}
 
 	/**

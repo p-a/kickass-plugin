@@ -23,6 +23,7 @@ package org.lyllo.kickassplugin;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
@@ -282,6 +283,11 @@ public class Constants {
 	public static final Pattern FILENAMESPACE_PATTERN = Pattern.compile("\\A\\s*.filenamespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 	public static final Pattern NAMESPACE_PATTERN = Pattern.compile("\\A\\s*.namespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 
+	public static final QualifiedName  LABELS_SESSION_KEY = new QualifiedName("LABELS", "LABELS");
+	public static final QualifiedName  MACROS_SESSION_KEY = new QualifiedName("MACROS", "MACROS");
+	public static final QualifiedName  IMPORTS_SESSION_KEY = new QualifiedName("IMPORTS", "IMPORTS");
+
+	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*$", Pattern.CASE_INSENSITIVE);
 
 
 }

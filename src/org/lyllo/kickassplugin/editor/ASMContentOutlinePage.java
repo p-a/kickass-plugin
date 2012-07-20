@@ -447,7 +447,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						stringLine = document.get(lineOffset, linelen);
 
 						stringLineLower = stringLine.toLowerCase();
-
+						
 						if (stringLineLower.indexOf(".function") > -1) {
 							pattern = Constants.FUNCTION_PATTERN;
 							matcher = pattern.matcher(stringLine);
@@ -471,6 +471,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 							}
 						}
 
+						child = null;
 						if (stringLineLower.indexOf(".label") > -1) {
 							pattern = Constants.LABEL_PATTERN;
 							matcher = pattern.matcher(stringLine);
@@ -478,7 +479,6 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 							if (matcher.find()) {
 								child = new TreeObject(matcher.group(1).trim(), Constants.TREEOBJECT_TYPE_LABEL);
 								child.setData(new Position(lineOffset, 1));
-								labelsAndSegments.addChild(child);
 							}
 						}
 
@@ -495,21 +495,25 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 								child = new TreeObject(stringLine.substring(matchStart, matchEnd), Constants.TREEOBJECT_TYPE_LABEL);
 								child.setData(new Position(startOffset, length));
 
-								TreeObject node = labelsAndSegments;
-								int sz = labelsAndSegments.getChildren().length;
-								if (sz > 0 && ((TreeObject)labelsAndSegments.getChild(sz-1)).getType() == Constants.TREEOBJECT_TYPE_SEGMENT){
-									node = ((TreeObject) labelsAndSegments.getChild(sz-1));
-								}
-								node.addChild(child);
 							}
 						}
+						
+						if (child != null){
+							TreeObject node = labelsAndSegments;
+							int sz = labelsAndSegments.getChildren().length;
+							if (sz > 0 && ((TreeObject)labelsAndSegments.getChild(sz-1)).getType() == Constants.TREEOBJECT_TYPE_SEGMENT){
+								node = ((TreeObject) labelsAndSegments.getChild(sz-1));
+							}
+							node.addChild(child);
+						
+						}
 
-						if (stringLineLower.indexOf(".pc") > -1 || stringLineLower.indexOf(".pseudopc") > -1
-								|| stringLineLower.indexOf(".namespace") > -1) {
+						if (stringLineLower.indexOf(".pc") > -1 || stringLineLower.indexOf(".pseudopc") > -1) {
 							child = new TreeObject(stringLineLower.replace("{","").trim(), Constants.TREEOBJECT_TYPE_SEGMENT);
 							child.setData(new Position(lineOffset, 1));
 							labelsAndSegments.addChild(child);
 						}
+						
 					}
 					catch (BadLocationException e) {
 						Activator.getDefault().getLog().log(
