@@ -403,7 +403,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 				return matchingSourceFolder(resource.getProjectRelativePath());
 			} else if (resourceType == IResource.FILE) {
 				String extension = resource.getFileExtension();
-				if ("asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension)){
+				if (extension != null && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()){
 					compileFile((IFile) resource);
 				}
 			}
@@ -446,12 +446,12 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 				if (resourceType == IResource.FILE) {
 					String extension = resource.getFileExtension();
-					if ((extension != null) && ( "asm".equalsIgnoreCase(extension) || "s".equalsIgnoreCase(extension))) {
+					if ((extension != null) && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()) {
 						if (!monitor.isCanceled())
 							compileFile((IFile) resource);
-					} else if (extension != null && ("inc".equalsIgnoreCase(extension) || "sym".equalsIgnoreCase(extension))){
+					} else if (extension != null && Constants.EXTENSION_PATTERN_INCLUDES.matcher(extension).matches()){
+
 						Map<String,IFile>srcs = new HashMap<String, IFile>();
-						
 						getAllIncluders((IFile)resource, new HashSet<String>(),srcs);
 						
 						for (IFile file: srcs.values()){
