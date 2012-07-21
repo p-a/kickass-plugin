@@ -298,7 +298,7 @@ public class Constants {
 	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*\\s?$", Pattern.CASE_INSENSITIVE);
 
 	public static final Pattern CONST_PATTERN = Pattern.compile("^\\.const\\s+(\\w+)(\\s*=\\s*\\w+)\\s*.*\\s?$",Pattern.CASE_INSENSITIVE);
-	public static final Pattern EQUALS_PATTERN = Pattern.compile("//s*=//s*.*");
+	public static final Pattern EQUALS_PATTERN = Pattern.compile("\\s*=.*");
 
 
 

@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -153,15 +154,11 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 			if (arg0.getType() == IResource.FILE){
 				
 				String ext = arg0.getFileExtension();
-				if (ext != null){
-					ext = ext.toLowerCase();
-				}
-				if ("asm".equals(ext) || "s".equals(ext) || "inc".equals(ext) || "sym".equals(ext)){
+				if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
 					if (containsFilename((IFile) arg0, filename)){
-						if ("asm".equals(ext) || "s".equals(ext)){
+						if (Constants.EXTENSION_PATTERN_MAINFILES.matcher(ext).matches()){
 							srcs.put(arg0.getRawLocation().toOSString(), (IFile)arg0);
 						} else {
-							
 							getAllIncluders((IFile) arg0, new HashSet<String>(),srcs);
 						}
 					}
@@ -178,8 +175,9 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 			String line = null;
 			try {
 				while(!retval && (line = br.readLine()) != null){
-					if (line.trim().toLowerCase().startsWith(".import")){
-						retval = line.matches("^\\s*\\.import\\s+source\\s+\""+filename2+"\"");
+					if (line.toLowerCase().contains(".import")){
+						Matcher matcher = Constants.IMPORT_SOURCE_PATTERN.matcher(line);
+						retval = matcher.matches() && matcher.group(1).equalsIgnoreCase(filename2);
 					}
 				}
 			} catch (IOException e) {

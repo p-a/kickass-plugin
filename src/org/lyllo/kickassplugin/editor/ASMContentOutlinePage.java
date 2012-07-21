@@ -22,7 +22,6 @@
 package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -270,7 +269,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 			List<String> cleanLabels = new ArrayList<String>();
 			{
 
-				Pattern p = Constants.EQUALS_PATTERN;
+				Pattern p = Pattern.compile("\\s*=.*");
 				for (String s: list){
 					cleanLabels.add(p.matcher(s).replaceAll(""));
 				}
