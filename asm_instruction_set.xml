@@ -93,6 +93,7 @@
 <segment field=".TEXT" description="" />
 <segment field=".PLUGIN" description="" />
 <segment field=".MODIFY" description="" />
+<segment field=".FILEMODIFY" description="" />
 
 <segment field=".FILL" description="Assembler directive that defines bytes" />
 <segment field=".STRUCT" description="Assembler directive that defines the program instructions." />
