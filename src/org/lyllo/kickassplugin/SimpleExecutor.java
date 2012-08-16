@@ -57,6 +57,7 @@ public class SimpleExecutor {
 						final String output = line;
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
+								Activator.getConsole().bringConsoleToFront();
 								Activator.getConsole().println(output);
 							}
 						});
@@ -66,6 +67,7 @@ public class SimpleExecutor {
 						final String erroutput = errorline;
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
+								Activator.getConsole().bringConsoleToFront();
 								Activator.getConsole().println("[err] " + erroutput);
 							}
 						});

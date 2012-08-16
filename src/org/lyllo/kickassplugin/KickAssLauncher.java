@@ -99,6 +99,9 @@ public class KickAssLauncher implements IStreamListener {
 					if (iProcess != null && !iProcess.isTerminated()){
 						iProcess.terminate();
 					}
+					
+					Activator.getConsole().bringConsoleToFront();
+					Activator.getConsole().println("Done compiling");
 				}
 			}
 		} else {
@@ -113,7 +116,8 @@ public class KickAssLauncher implements IStreamListener {
 
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				Activator.getConsole().println(arg0);
+				Activator.getConsole().bringConsoleToFront();
+				Activator.getConsole().print(arg0);
 			}
 		});
 	}
