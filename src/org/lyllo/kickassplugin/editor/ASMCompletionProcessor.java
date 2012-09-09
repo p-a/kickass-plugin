@@ -237,8 +237,13 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 			return;
 		
 		for (String label: labels){
+			int cursorpos = label.indexOf('(')+1;
+			if (cursorpos == 0 || label.indexOf(')') == cursorpos){
+				cursorpos = label.length();
+			}
+			
 			if (label.toLowerCase().startsWith(smprefix)){
-				proposalList.add(new CompletionProposal(label, offset, region.getLength(), 0, image,
+				proposalList.add(new CompletionProposal(label, offset, region.getLength(), cursorpos, image,
 						label + (key == null ? "" :  key), null, null));
 			}
 		}
@@ -264,7 +269,7 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 			while (i > 0) {
 				char ch = document.getChar(i - 1);
 
-				if (ch <= ' ' || ch == '<' || ch == '>' || ch == '#') {
+				if (ch <= ' ' || ch == '<' || ch == '>' || ch == '#' || ch == '!' || ch == '(') {
 					break;
 				}
 
