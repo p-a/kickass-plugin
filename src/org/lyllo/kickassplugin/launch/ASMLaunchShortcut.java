@@ -21,8 +21,10 @@
 */ 
 package org.lyllo.kickassplugin.launch;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
@@ -40,6 +42,7 @@ import org.eclipse.ui.IEditorPart;
 import org.lyllo.kickassplugin.Activator;
 import org.lyllo.kickassplugin.Constants;
 import org.lyllo.kickassplugin.Messages;
+import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 
 /**
@@ -63,9 +66,23 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
     if (!(firstSelection instanceof IFile)) {
       return;
     }
-
     IFile file = (IFile) firstSelection;
-    String workspaceFilename = file.toString().substring(2);
+    if (file.getFileExtension() == null || !Constants.EXTENSION_PATTERN_MAINFILES.matcher(file.getFileExtension()).matches()){
+    	return;
+    }
+    
+	String buildDir = ProjectPrefenceHelper.getBuildDir(file.getProject());
+	String destdir = file.getProject().getLocationURI().getRawPath() + File.separator + buildDir;
+
+	IFolder destFolder = file.getProject().getFolder(buildDir);
+
+	if (!destFolder.exists()){
+		return;
+	}
+	
+	String dest = destdir + File.separator + file.getName();
+	String destName = file.getName().substring(0,file.getName().lastIndexOf('.')+1)+"prg";
+	dest = dest.substring(0,dest.lastIndexOf(File.separatorChar)+1) + destName;
 
     try {
       ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
@@ -73,7 +90,7 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
       ILaunchConfiguration[] configs = manager.getLaunchConfigurations(type);
 
       for (ILaunchConfiguration config : configs) {
-        if (config.getAttribute(Constants.LAUNCH_FILE, "").equalsIgnoreCase(workspaceFilename)) {
+        if (config.getAttribute(Constants.LAUNCH_FILE, "").equalsIgnoreCase(destName)) {
           DebugUITools.launch(config, mode);
           return;
         }
@@ -82,24 +99,17 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
       ILaunchConfigurationWorkingCopy copy = type.newInstance(
         null,
         manager.generateUniqueLaunchConfigurationNameFrom(Messages.EXECUTABLE_NAME));
-      copy.setAttribute(Constants.LAUNCH_FILE, workspaceFilename);
+      copy.setAttribute(Constants.LAUNCH_FILE, destName);
 
-      String sep = System.getProperty("file.separator");
-      if (sep.charAt(0) != '/') {
-        sep = "\\" + sep;
-      }
 
-      String wfile = workspaceFilename.replaceAll("/", sep);
+      String wfile = dest;
       int pos = wfile.lastIndexOf(System.getProperty("file.separator"));
 
       if (pos > 0) {
         wfile = wfile.substring(0, pos);
       }
 
-      String wdir = ResourcesPlugin.getWorkspace().getRoot().getLocation().makeAbsolute().toOSString()
-                    + System.getProperty("file.separator") + wfile;
-
-      copy.setAttribute(Constants.LAUNCH_WORKING_DIRECTORY, wdir);
+      copy.setAttribute(Constants.LAUNCH_WORKING_DIRECTORY, wfile);
       copy.setAttribute(Constants.LAUNCH_ARGUMENTS, "");
       ILaunchConfiguration config = copy.doSave();
       DebugUITools.launch(config, mode);

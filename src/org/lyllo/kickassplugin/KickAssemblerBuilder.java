@@ -269,6 +269,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		String dest = destdir + File.separator + file.getName();
 		String destName = file.getName().substring(0,file.getName().lastIndexOf('.')+1)+"prg";
 		dest = dest.substring(0,dest.lastIndexOf(File.separatorChar)+1) + destName;
+	
 		String cmdLine[] = createCommandLine(file,dest);
 		if (cmdLine == null){
 			throw new CoreException(new Status(Status.ERROR, Constants.PLUGIN_ID, "Could not compile. Please make sure that you have set the path to Kickass.jar in the Preferences"));

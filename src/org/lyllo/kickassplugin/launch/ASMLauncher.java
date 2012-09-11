@@ -67,15 +67,12 @@ public class ASMLauncher extends LaunchConfigurationDelegate {
 		}
 
 		String launchWorkingDirectory = configuration.getAttribute(Constants.LAUNCH_WORKING_DIRECTORY, "");
-		Activator.getDefault().getLog().log(
-				new Status(Status.INFO, Constants.PLUGIN_ID, "Launch working directory: " + launchWorkingDirectory));
 		if (launchWorkingDirectory == null || launchWorkingDirectory.trim().length() == 0){
 			return;
 		}
 
 		String launchFile = configuration.getAttribute(Constants.LAUNCH_FILE, "");
-		Activator.getDefault().getLog().log(
-				new Status(Status.INFO, Constants.PLUGIN_ID, "Launch file: " + launchFile));
+
 		if ((launchFile == null) || (launchFile.trim().length() < 1)) {
 			return;
 		}

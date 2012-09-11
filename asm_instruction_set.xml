@@ -25,12 +25,20 @@
   
 <!-- standard 6502 op codes --> 
 <instruction command="ADC" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
+<instruction command="ADC.Z" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
+<instruction command="ADC.ZP" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
 <instruction command="AND" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
+<instruction command="AND.Z" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
+<instruction command="AND.ZP" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
 <instruction command="ASL" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
+<instruction command="ASL.Z" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
+<instruction command="ASL.ZP" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
 <instruction command="BCC" description="BCC (Branch on Carry Clear) - Affect Flags: none" />
 <instruction command="BCS" description="BCS (Branch on Carry Set) - Affect Flags: none" />
 <instruction command="BEQ" description="BEQ (Branch on EQual) - Affect Flags: none" />
 <instruction command="BIT" description="BIT (test BITs) - Affects Flags: N V Z " />
+<instruction command="BIT.Z" description="BIT (test BITs) - Affects Flags: N V Z " />
+<instruction command="BIT.ZP" description="BIT (test BITs) - Affects Flags: N V Z " />
 <instruction command="BMI" description="BMI (Branch on MInus) - Affect Flags: none" />
 <instruction command="BNE" description="BNE (Branch on Not Equal) - Affect Flags: none" />
 <instruction command="BPL" description="BPL (Branch on PLus) - Affect Flags: none" />
@@ -42,44 +50,100 @@
 <instruction command="CLI" description="CLI (CLear Interrupt)" />
 <instruction command="CLV" description="CLV (CLear oVerflow)" />
 <instruction command="CMP" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
+<instruction command="CMP.Z" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
+<instruction command="CMP.ZP" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
 <instruction command="CPX" description="CPX (ComPare X register) - Affects Flags: S Z C" />
+<instruction command="CPX.Z" description="CPX (ComPare X register) - Affects Flags: S Z C" />
+<instruction command="CPX.ZP" description="CPX (ComPare X register) - Affects Flags: S Z C" />
 <instruction command="CPY" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
+<instruction command="CPY.Z" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
+<instruction command="CPY.ZP" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
 <instruction command="DEC" description="DEC (DECrement memory) - Affects Flags: S Z" />
+<instruction command="DEC.Z" description="DEC (DECrement memory) - Affects Flags: S Z" />
+<instruction command="DEC.ZP" description="DEC (DECrement memory) - Affects Flags: S Z" />
 <instruction command="DEX" description="DEX (DEcrement X) - Affect Flags: S Z" />
 <instruction command="DEY" description="DEY (DEcrement Y) - Affect Flags: S Z" />
-<instruction command="EOR" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
+<instruction command="EOR.Z" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
+<instruction command="EOR.ZP" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
 <instruction command="INC" description="INC (INCrement memory) - Affects Flags: S Z" />
+<instruction command="INC.Z" description="INC (INCrement memory) - Affects Flags: S Z" />
+<instruction command="INC.ZP" description="INC (INCrement memory) - Affects Flags: S Z" />
 <instruction command="INX" description="INX (INcrement X) - Affect Flags: S Z" />
 <instruction command="INY" description="INY (INcrement Y) - Affect Flags: S Z" />
 <instruction command="JMP" description="JMP (JuMP) - Affects Flags: none" />
 <instruction command="JSR" description="JSR (Jump to SubRoutine) - Affects Flags: none" />
 <instruction command="LDA" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
+<instruction command="LDA.Z" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
+<instruction command="LDA.ZP" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
 <instruction command="LDX" description="LDX (LoaD X register) - Affects Flags: S Z" />
+<instruction command="LDX.Z" description="LDX (LoaD X register) - Affects Flags: S Z" />
+<instruction command="LDX.ZP" description="LDX (LoaD X register) - Affects Flags: S Z" />
 <instruction command="LDY" description="LDY (LoaD Y register) - Affects Flags: S Z" />
+<instruction command="LDY.Z" description="LDY (LoaD Y register) - Affects Flags: S Z" />
+<instruction command="LDY.ZP" description="LDY (LoaD Y register) - Affects Flags: S Z" />
 <instruction command="LSR" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
+<instruction command="LSR.Z" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
+<instruction command="LSR.ZP" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
 <instruction command="NOP" description="NOP (No OPeration) - Affects Flags: none" />
 <instruction command="ORA" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
+<instruction command="ORA.Z" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
+<instruction command="ORA.ZP" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
 <instruction command="PHA" description="PHA (PusH Accumulator)" />
 <instruction command="PHP" description="PHP (PusH Processor status)" />
 <instruction command="PLA" description="PLA (PuLl Accumulator)" />
 <instruction command="PLP" description="PLP (PuLl Processor status)" />
 <instruction command="ROL" description="ROL (ROtate Left) - Affects Flags: S Z C" />
+<instruction command="ROL.Z" description="ROL (ROtate Left) - Affects Flags: S Z C" />
+<instruction command="ROL.ZP" description="ROL (ROtate Left) - Affects Flags: S Z C" />
 <instruction command="ROR" description="ROR (ROtate Right) - Affects Flags: S Z 	C" />
+<instruction command="ROR.Z" description="ROR (ROtate Right) - Affects Flags: S Z 	C" />
+<instruction command="ROR.ZP" description="ROR (ROtate Right) - Affects Flags: S Z 	C" />
 <instruction command="RTI" description="RTI (ReTurn from Interrupt) - Affects Flags: all" />
 <instruction command="RTS" description="RTS (ReTurn from Subroutine) - Affects Flags: none" />
 <instruction command="SBC" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
+<instruction command="SBC.Z" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
+<instruction command="SBC.ZP" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
 <instruction command="SEC" description="SEC (SEt Carry)" />
 <instruction command="SED" description="SED (SEt Decimal)" />
 <instruction command="SEI" description="SEI (SEt Interrupt)" />
 <instruction command="STA" description="STA (STore Accumulator) - Affects Flags: none" />
+<instruction command="STA.Z" description="STA (STore Accumulator) - Affects Flags: none" />
+<instruction command="STA.ZP" description="STA (STore Accumulator) - Affects Flags: none" />
 <instruction command="STX" description="STX (STore X register) - Affects Flags: none" />
+<instruction command="STX.Z" description="STX (STore X register) - Affects Flags: none" />
+<instruction command="STX.ZP" description="STX (STore X register) - Affects Flags: none" />
 <instruction command="STY" description="STY (STore Y register) - Affects Flags: none" />
+<instruction command="STY.Z" description="STY (STore Y register) - Affects Flags: none" />
+<instruction command="STY.ZP" description="STY (STore Y register) - Affects Flags: none" />
 <instruction command="TAX" description="TAX (Transfer A to X)" />
 <instruction command="TAY" description="TAY (Transfer A to Y)" />
 <instruction command="TSX" description="TSX (Transfer Stack ptr to X)" />
 <instruction command="TXA" description="TXA (Transfer X to A)" />
 <instruction command="TXS" description="TXS (Transfer X to Stack ptr)" />
 <instruction command="TYA" description="TYA (Transfer Y to A)" />
+
+<instruction command="AHX" description="Illegal opcode" />
+<instruction command="ALR" description="Illegal opcode" />
+<instruction command="ANC" description="Illegal opcode" />
+<instruction command="ANC2" description="Illegal opcode" />
+<instruction command="ARR" description="Illegal opcode" />
+<instruction command="AXS" description="Illegal opcode" />
+<instruction command="DCP" description="Illegal opcode" />
+<instruction command="ISC" description="Illegal opcode" />
+<instruction command="LAS" description="Illegal opcode" />
+<instruction command="LAX" description="Illegal opcode" />
+<instruction command="RRA" description="Illegal opcode" />
+<instruction command="SAX" description="Illegal opcode" />
+<instruction command="SHX" description="Illegal opcode" />
+<instruction command="SHY" description="Illegal opcode" />
+<instruction command="SLO" description="Illegal opcode" />
+<instruction command="SRE" description="Illegal opcode" />
+<instruction command="TAS" description="Illegal opcode" />
+<instruction command="XAA" description="Illegal opcode" />
+
+<instruction command="BRA" description="DTV opcode" />
+<instruction command="SAC" description="DTV opcode" />
+<instruction command="SIR" description="DTV opcode" />
   
 <!-- kick assembler instructions -->   
 <segment field=".IMPORT" description="Assembler directive imports and external file" />
