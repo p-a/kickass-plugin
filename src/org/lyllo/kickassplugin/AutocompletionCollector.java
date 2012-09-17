@@ -91,7 +91,10 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 					reader = new BufferedReader(new InputStreamReader(file.getContents(true)),32768);
 					String line = null;
 					while ( (line = reader.readLine()) != null){
-						if (line.indexOf(":") > -1 || line.indexOf(".label") > -1){
+
+						String lowerLine = line.toLowerCase();
+						
+						if (line.indexOf(":") > -1 || lowerLine.indexOf(".label") > -1){
 							Matcher matcher = Constants.LABEL_PATTERN.matcher(line);
 							if (matcher.matches()){
 								labels.add(matcher.group(1).replaceAll("\\s*=\\s*\\S+", ""));
@@ -103,7 +106,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							}
 						}
 						
-						if (line.toLowerCase().indexOf(".macro") > -1) {
+						if (lowerLine.indexOf(".macro") > -1) {
 							Pattern pattern = Constants.MACRO_PATTERN;
 							Matcher matcher = pattern.matcher(line);
 
@@ -112,7 +115,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							}
 						}
 						
-						if (line.toLowerCase().indexOf(".pseudocommand") > -1) {
+						if (lowerLine.indexOf(".pseudocommand") > -1) {
 							Pattern pattern = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)$", Pattern.CASE_INSENSITIVE);
 							Matcher matcher = pattern.matcher(line);
 
@@ -121,16 +124,16 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							}
 						}
 						
-						if (line.toLowerCase().indexOf(".const") > -1) {
-							Pattern pattern = Constants.CONST_PATTERN;
+						if (lowerLine.indexOf(".var") > -1 || lowerLine.indexOf(".const") > -1) {
+							Pattern pattern = Constants.CONSTVAR_PATTERN;
 							Matcher matcher = pattern.matcher(line);
 
 							if (matcher.matches()) {
-								constig.add(matcher.group(1));
+								constig.add(matcher.group(2));
 							}
 						}
 						
-						if (line.toLowerCase().indexOf(".function") > -1) {
+						if (lowerLine.indexOf(".function") > -1) {
 							Pattern pattern = Constants.FUNCTION_PATTERN;
 							Matcher matcher = pattern.matcher(line);
 
@@ -140,13 +143,16 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 						}
 
 						
-						if (line.toLowerCase().indexOf(".import") > -1) {
+						if (lowerLine.indexOf(".import") > -1) {
 							Pattern pattern = Constants.IMPORT_SOURCE_PATTERN;
 							Matcher matcher = pattern.matcher(line);
 							
 							if (matcher.matches()) {
 								IPath importPath = file.getParent().getProjectRelativePath().append(matcher.group(1));
-								imports.add(importPath.toString());
+								IFile importedFile = file.getProject().getFile(importPath);
+								if (importedFile.exists()){
+									imports.add(importPath.toString());
+								}
 							}
 						}
 

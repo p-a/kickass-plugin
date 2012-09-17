@@ -269,7 +269,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 			List<String> cleanLabels = new ArrayList<String>();
 			{
 
-				Pattern p = Pattern.compile("\\s*=.*");
+				Pattern p = Constants.EQUALS_PATTERN;
 				for (String s: list){
 					cleanLabels.add(p.matcher(s).replaceAll(""));
 				}
@@ -506,12 +506,12 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 						stringLineLower = stringLine.toLowerCase();
 
-						if (stringLineLower.contains(".const")) {
-							pattern = Constants.CONST_PATTERN;
+						if (stringLineLower.contains(".const") || stringLineLower.contains(".var")) {
+							pattern = Constants.CONSTVAR_PATTERN;
 							matcher = pattern.matcher(stringLine);
 							
 							if (matcher.matches()){
-								child = new TreeObject(matcher.group(1)+matcher.group(2),Constants.TREEOBJECT_TYPE_CONST);
+								child = new TreeObject(matcher.group(2)+matcher.group(3),Constants.TREEOBJECT_TYPE_CONST);
 								child.setData(new Position(lineOffset,1));
 								
 								consts.addChild(child);

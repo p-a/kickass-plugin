@@ -63,6 +63,7 @@
 <instruction command="DEC.ZP" description="DEC (DECrement memory) - Affects Flags: S Z" />
 <instruction command="DEX" description="DEX (DEcrement X) - Affect Flags: S Z" />
 <instruction command="DEY" description="DEY (DEcrement Y) - Affect Flags: S Z" />
+<instruction command="EOR" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
 <instruction command="EOR.Z" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
 <instruction command="EOR.ZP" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
 <instruction command="INC" description="INC (INCrement memory) - Affects Flags: S Z" />

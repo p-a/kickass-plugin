@@ -88,10 +88,15 @@ public class ASMLauncher extends LaunchConfigurationDelegate {
 
 		String sep = File.separator;
 		if (sep.charAt(0) != '/') {
-			sep = "\\" + sep;
+			sep = "\\" + sep; //This is weird
 		}
+		
 		filename = filename.replaceAll("/", sep);
 
+		while (filename.length() > 0 && filename.charAt(0) == '\\'){
+			filename = filename.substring(1);
+		}
+		
 		List<String> cmds = new ArrayList<String>();
 		cmds.add(debugger.trim());
 

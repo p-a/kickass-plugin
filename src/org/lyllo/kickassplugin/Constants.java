@@ -284,7 +284,7 @@ public class Constants {
 	public final static Pattern MACRO_PATTERN = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
 	public final static Pattern PSEUDOCOMMAND_PATTERN = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)\\{?.*$", Pattern.CASE_INSENSITIVE);
 
-	public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\A\\s*.function\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
+	public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\A\\s*\\.function\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
 	
 	public static final Pattern FILENAMESPACE_PATTERN = Pattern.compile("\\A\\s*.filenamespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 	public static final Pattern NAMESPACE_PATTERN = Pattern.compile("\\A\\s*.namespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
@@ -297,7 +297,7 @@ public class Constants {
 
 	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*\\s?$", Pattern.CASE_INSENSITIVE);
 
-	public static final Pattern CONST_PATTERN = Pattern.compile("^\\.const\\s+(\\w+)(\\s*=\\s*\\w+)\\s*.*\\s?$",Pattern.CASE_INSENSITIVE);
+	public static final Pattern CONSTVAR_PATTERN = Pattern.compile("^\\s*\\.(const|var)\\s+(\\w+)(\\s*=\\s*\\S+)\\s*.*\\s?$",Pattern.CASE_INSENSITIVE);
 	public static final Pattern EQUALS_PATTERN = Pattern.compile("\\s*=.*");
 
 

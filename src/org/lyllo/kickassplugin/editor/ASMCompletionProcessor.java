@@ -237,14 +237,16 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 			return;
 		
 		for (String label: labels){
-			int cursorpos = label.indexOf('(')+1;
-			if (cursorpos == 0 || label.indexOf(')') == cursorpos){
-				cursorpos = label.length();
-			}
 			
 			if (label.toLowerCase().startsWith(smprefix)){
+		
+				int cursorpos = label.indexOf('(')+1;
+				if (cursorpos == 0 || label.indexOf(')') == cursorpos){
+					cursorpos = label.length();
+				} 
+				
 				proposalList.add(new CompletionProposal(label, offset, region.getLength(), cursorpos, image,
-						label + (key == null ? "" :  key), null, null));
+						label + (key == null ? "" :  key), null, null) );
 			}
 		}
 	}

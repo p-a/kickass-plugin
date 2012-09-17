@@ -23,8 +23,10 @@ package org.lyllo.kickassplugin.launch;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
@@ -67,9 +69,31 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
       return;
     }
     IFile file = (IFile) firstSelection;
-    if (file.getFileExtension() == null || !Constants.EXTENSION_PATTERN_MAINFILES.matcher(file.getFileExtension()).matches()){
+    if (file.getFileExtension() == null || !Constants.EXTENSION_PATTERN_ALL.matcher(file.getFileExtension()).matches()){
     	return;
     }
+	
+    if (Constants.EXTENSION_PATTERN_INCLUDES.matcher(file.getFileExtension()).matches()){
+    	IContainer parent = file.getParent();
+    	file = null;
+    
+    	try {
+			IResource[] members = parent.members();
+			for (int i =0; i < members.length && file == null; i++){
+				if (members[i] instanceof IFile && members[i].getFileExtension() != null){
+					if (Constants.EXTENSION_PATTERN_MAINFILES.matcher(members[i].getFileExtension()).matches()){
+						file = (IFile) members[i];
+					}
+				}
+			}
+		} catch (CoreException e) {
+		}
+    	
+    	if (file == null){
+    		return;
+    	}
+    }
+    
     
 	String buildDir = ProjectPrefenceHelper.getBuildDir(file.getProject());
 	String destdir = file.getProject().getLocationURI().getRawPath() + File.separator + buildDir;
@@ -82,6 +106,15 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 	
 	String dest = destdir + File.separator + file.getName();
 	String destName = file.getName().substring(0,file.getName().lastIndexOf('.')+1)+"prg";
+	
+	if (!destFolder.getFile(destName).exists()){
+		try {
+			file.touch(null);
+		} catch (CoreException e) {
+		}
+		return;
+  	}
+	
 	dest = dest.substring(0,dest.lastIndexOf(File.separatorChar)+1) + destName;
 
     try {
@@ -103,7 +136,7 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 
 
       String wfile = dest;
-      int pos = wfile.lastIndexOf(System.getProperty("file.separator"));
+      int pos = wfile.lastIndexOf(File.separator);
 
       if (pos > 0) {
         wfile = wfile.substring(0, pos);
