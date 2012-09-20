@@ -22,7 +22,6 @@
 package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -200,15 +199,15 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 
 	private IRule createCaseSensitiveWordRuleMapping(
 			Map<String, String> map, Token token) {
-		WordRuleCaseInsensitive rule = createWordRuleMapping(map, token);
-		rule.setCaseSensitive(true);
+		WordRuleCaseInsensitive rule = createWordRuleMapping(map, token, true);
 		
 		return rule;
 	}
 
-	private WordRuleCaseInsensitive createWordRuleMapping(Map<String, String> map, IToken token) {
+	private WordRuleCaseInsensitive createWordRuleMapping(Map<String, String> map, IToken token, boolean caseSensitive) {
 		WordRuleCaseInsensitive wordRule = new WordRuleCaseInsensitive(this);
-
+		wordRule.setCaseSensitive(caseSensitive);
+		
 		if (map != null) {
 			for (String word : map.keySet()) {
 				wordRule.addWord(word, token);

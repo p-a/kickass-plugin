@@ -22,10 +22,7 @@
 package org.lyllo.kickassplugin.editor;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.TreeMap;
-import java.util.Vector;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -196,7 +193,7 @@ public final class ASMInstructionSet {
           } else if (qName.equals("constant")) {
         	  constantMap.put(attributes.getValue("field"), attributes.getValue("description"));
           } else if (qName.equals("class")) {
-        	  classMap.put(attributes.getValue("field").toLowerCase(), attributes.getValue("description"));
+        	  classMap.put(attributes.getValue("field"), attributes.getValue("description"));
           }
         }
       });

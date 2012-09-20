@@ -126,7 +126,7 @@ private IRuleListener listener;
    * {@inheritDoc}
    */
   public void addWord(String word, IToken token) {
-    super.addWord(word.toLowerCase(), token);
+    super.addWord(caseSensitive ? word : word.toLowerCase(), token);
   }
 
   /**

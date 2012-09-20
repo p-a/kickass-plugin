@@ -176,6 +176,7 @@
 <segment field=".align" description="" />
 <segment field=".pseudopc" description="" />
 <segment field=".if" description="" />
+<segment field="else" description="" />
 <segment field=".const" description="" />
 <segment field=".label" description="" />
 <segment field=".enum" description="" />
