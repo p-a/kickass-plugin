@@ -23,6 +23,7 @@ package org.lyllo.kickassplugin.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.rules.ICharacterScanner;
@@ -72,11 +73,11 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 
 		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 
-		rules.add( createWordRuleMapping(ASMInstructionSet.getInstructions(), instructionToken) );
-		rules.add( createWordRuleMapping(ASMInstructionSet.getSegments(), segmentToken) );
-		rules.add( createWordRuleMapping(ASMInstructionSet.getFunctions(), functionToken) );
-		rules.add( createWordRuleMapping(ASMInstructionSet.getConstants(), constantToken) );
-		rules.add( createWordRuleMapping(ASMInstructionSet.getClasses(), classToken) );
+		rules.add( createCaseSensitiveWordRuleMapping(ASMInstructionSet.getInstructions(), instructionToken) );
+		rules.add( createCaseSensitiveWordRuleMapping(ASMInstructionSet.getSegments(), segmentToken) );
+		rules.add( createCaseSensitiveWordRuleMapping(ASMInstructionSet.getFunctions(), functionToken) );
+		rules.add( createCaseSensitiveWordRuleMapping(ASMInstructionSet.getConstants(), constantToken) );
+		rules.add( createCaseSensitiveWordRuleMapping(ASMInstructionSet.getClasses(), classToken) );
 
 		IRule immediateRule = new IRule() {
 
@@ -197,7 +198,15 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 		setRules(rules.toArray(new IRule[] {}));
 	}
 
-	private WordRuleCaseInsensitive createWordRuleMapping(HashMap<String, String> map, IToken token) {
+	private IRule createCaseSensitiveWordRuleMapping(
+			Map<String, String> map, Token token) {
+		WordRuleCaseInsensitive rule = createWordRuleMapping(map, token);
+		rule.setCaseSensitive(true);
+		
+		return rule;
+	}
+
+	private WordRuleCaseInsensitive createWordRuleMapping(Map<String, String> map, IToken token) {
 		WordRuleCaseInsensitive wordRule = new WordRuleCaseInsensitive(this);
 
 		if (map != null) {

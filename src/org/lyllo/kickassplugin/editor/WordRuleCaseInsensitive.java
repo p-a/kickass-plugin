@@ -39,6 +39,7 @@ public class WordRuleCaseInsensitive extends WordRule {
    * Buffer used for pattern detection
    */
   private StringBuffer fBuffer = new StringBuffer();
+  private boolean caseSensitive = false;
 private IRuleListener listener;
 
   /**
@@ -89,7 +90,8 @@ private IRuleListener listener;
     }
 
     c = scanner.read();
-    c = Character.toLowerCase((char) c);
+    if (!caseSensitive)
+    	c = Character.toLowerCase((char) c);
     if (fDetector.isWordStart((char) c)) {
       if (fColumn == UNDEFINED || (fColumn == scanner.getColumn() - 1)) {
 
@@ -97,7 +99,8 @@ private IRuleListener listener;
         do {
           fBuffer.append((char) c);
           c = scanner.read();
-          c = Character.toLowerCase((char) c);
+          if (!caseSensitive)
+        	  c = Character.toLowerCase((char) c);
         } while (c != ICharacterScanner.EOF && c!= '(' && fDetector.isWordPart((char) c));
         scanner.unread();
 
@@ -137,7 +140,15 @@ private IRuleListener listener;
     }
   }
 
-  /**
+  public boolean isCaseSensitive() {
+	return caseSensitive;
+}
+
+public void setCaseSensitive(boolean caseSensitive) {
+	this.caseSensitive = caseSensitive;
+}
+
+/**
    * A WordDetector, which recognizes all typable characters.
    * 
    * @author andre

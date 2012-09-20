@@ -24,232 +24,258 @@
 <sets>
   
 <!-- standard 6502 op codes --> 
-<instruction command="ADC" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
-<instruction command="ADC.Z" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
-<instruction command="ADC.ZP" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
-<instruction command="AND" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
-<instruction command="AND.Z" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
-<instruction command="AND.ZP" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
-<instruction command="ASL" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
-<instruction command="ASL.Z" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
-<instruction command="ASL.ZP" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
-<instruction command="BCC" description="BCC (Branch on Carry Clear) - Affect Flags: none" />
-<instruction command="BCS" description="BCS (Branch on Carry Set) - Affect Flags: none" />
-<instruction command="BEQ" description="BEQ (Branch on EQual) - Affect Flags: none" />
-<instruction command="BIT" description="BIT (test BITs) - Affects Flags: N V Z " />
-<instruction command="BIT.Z" description="BIT (test BITs) - Affects Flags: N V Z " />
-<instruction command="BIT.ZP" description="BIT (test BITs) - Affects Flags: N V Z " />
-<instruction command="BMI" description="BMI (Branch on MInus) - Affect Flags: none" />
-<instruction command="BNE" description="BNE (Branch on Not Equal) - Affect Flags: none" />
-<instruction command="BPL" description="BPL (Branch on PLus) - Affect Flags: none" />
-<instruction command="BRK" description="BRK (BReaK) - Affects Flags: B" />
-<instruction command="BVC" description="BVC (Branch on oVerflow Clear) - Affect Flags: none" />
-<instruction command="BVS" description="BVS (Branch on oVerflow Set) - Affect Flags: none" />
-<instruction command="CLC" description="CLC (CLear Carry)" />
-<instruction command="CLD" description="CLD (CLear Decimal)" />
-<instruction command="CLI" description="CLI (CLear Interrupt)" />
-<instruction command="CLV" description="CLV (CLear oVerflow)" />
-<instruction command="CMP" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
-<instruction command="CMP.Z" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
-<instruction command="CMP.ZP" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
-<instruction command="CPX" description="CPX (ComPare X register) - Affects Flags: S Z C" />
-<instruction command="CPX.Z" description="CPX (ComPare X register) - Affects Flags: S Z C" />
-<instruction command="CPX.ZP" description="CPX (ComPare X register) - Affects Flags: S Z C" />
-<instruction command="CPY" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
-<instruction command="CPY.Z" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
-<instruction command="CPY.ZP" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
-<instruction command="DEC" description="DEC (DECrement memory) - Affects Flags: S Z" />
-<instruction command="DEC.Z" description="DEC (DECrement memory) - Affects Flags: S Z" />
-<instruction command="DEC.ZP" description="DEC (DECrement memory) - Affects Flags: S Z" />
-<instruction command="DEX" description="DEX (DEcrement X) - Affect Flags: S Z" />
-<instruction command="DEY" description="DEY (DEcrement Y) - Affect Flags: S Z" />
-<instruction command="EOR" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
-<instruction command="EOR.Z" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
-<instruction command="EOR.ZP" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
-<instruction command="INC" description="INC (INCrement memory) - Affects Flags: S Z" />
-<instruction command="INC.Z" description="INC (INCrement memory) - Affects Flags: S Z" />
-<instruction command="INC.ZP" description="INC (INCrement memory) - Affects Flags: S Z" />
-<instruction command="INX" description="INX (INcrement X) - Affect Flags: S Z" />
-<instruction command="INY" description="INY (INcrement Y) - Affect Flags: S Z" />
-<instruction command="JMP" description="JMP (JuMP) - Affects Flags: none" />
-<instruction command="JSR" description="JSR (Jump to SubRoutine) - Affects Flags: none" />
-<instruction command="LDA" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
-<instruction command="LDA.Z" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
-<instruction command="LDA.ZP" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
-<instruction command="LDX" description="LDX (LoaD X register) - Affects Flags: S Z" />
-<instruction command="LDX.Z" description="LDX (LoaD X register) - Affects Flags: S Z" />
-<instruction command="LDX.ZP" description="LDX (LoaD X register) - Affects Flags: S Z" />
-<instruction command="LDY" description="LDY (LoaD Y register) - Affects Flags: S Z" />
-<instruction command="LDY.Z" description="LDY (LoaD Y register) - Affects Flags: S Z" />
-<instruction command="LDY.ZP" description="LDY (LoaD Y register) - Affects Flags: S Z" />
-<instruction command="LSR" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
-<instruction command="LSR.Z" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
-<instruction command="LSR.ZP" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
-<instruction command="NOP" description="NOP (No OPeration) - Affects Flags: none" />
-<instruction command="ORA" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
-<instruction command="ORA.Z" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
-<instruction command="ORA.ZP" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
-<instruction command="PHA" description="PHA (PusH Accumulator)" />
-<instruction command="PHP" description="PHP (PusH Processor status)" />
-<instruction command="PLA" description="PLA (PuLl Accumulator)" />
-<instruction command="PLP" description="PLP (PuLl Processor status)" />
-<instruction command="ROL" description="ROL (ROtate Left) - Affects Flags: S Z C" />
-<instruction command="ROL.Z" description="ROL (ROtate Left) - Affects Flags: S Z C" />
-<instruction command="ROL.ZP" description="ROL (ROtate Left) - Affects Flags: S Z C" />
-<instruction command="ROR" description="ROR (ROtate Right) - Affects Flags: S Z 	C" />
-<instruction command="ROR.Z" description="ROR (ROtate Right) - Affects Flags: S Z 	C" />
-<instruction command="ROR.ZP" description="ROR (ROtate Right) - Affects Flags: S Z 	C" />
-<instruction command="RTI" description="RTI (ReTurn from Interrupt) - Affects Flags: all" />
-<instruction command="RTS" description="RTS (ReTurn from Subroutine) - Affects Flags: none" />
-<instruction command="SBC" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
-<instruction command="SBC.Z" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
-<instruction command="SBC.ZP" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
-<instruction command="SEC" description="SEC (SEt Carry)" />
-<instruction command="SED" description="SED (SEt Decimal)" />
-<instruction command="SEI" description="SEI (SEt Interrupt)" />
-<instruction command="STA" description="STA (STore Accumulator) - Affects Flags: none" />
-<instruction command="STA.Z" description="STA (STore Accumulator) - Affects Flags: none" />
-<instruction command="STA.ZP" description="STA (STore Accumulator) - Affects Flags: none" />
-<instruction command="STX" description="STX (STore X register) - Affects Flags: none" />
-<instruction command="STX.Z" description="STX (STore X register) - Affects Flags: none" />
-<instruction command="STX.ZP" description="STX (STore X register) - Affects Flags: none" />
-<instruction command="STY" description="STY (STore Y register) - Affects Flags: none" />
-<instruction command="STY.Z" description="STY (STore Y register) - Affects Flags: none" />
-<instruction command="STY.ZP" description="STY (STore Y register) - Affects Flags: none" />
-<instruction command="TAX" description="TAX (Transfer A to X)" />
-<instruction command="TAY" description="TAY (Transfer A to Y)" />
-<instruction command="TSX" description="TSX (Transfer Stack ptr to X)" />
-<instruction command="TXA" description="TXA (Transfer X to A)" />
-<instruction command="TXS" description="TXS (Transfer X to Stack ptr)" />
-<instruction command="TYA" description="TYA (Transfer Y to A)" />
+<instruction command="adc" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
+<instruction command="adc.z" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
+<instruction command="adc.zp" description="ADC (ADd with Carry) - Affects Flags: S V Z C" />
+<instruction command="and" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
+<instruction command="and.z" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
+<instruction command="and.zp" description="AND (bitwise AND with accumulator) - Affects Flags: S Z" />
+<instruction command="asl" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
+<instruction command="asl.z" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
+<instruction command="asl.zp" description="ASL (Arithmetic Shift Left) - Affects Flags: S Z C" />
+<instruction command="bcc" description="BCC (Branch on Carry Clear) - Affect Flags: none" />
+<instruction command="bcs" description="BCS (Branch on Carry Set) - Affect Flags: none" />
+<instruction command="beq" description="BEQ (Branch on EQual) - Affect Flags: none" />
+<instruction command="bit" description="BIT (test BITs) - Affects Flags: N V Z " />
+<instruction command="bit.z" description="BIT (test BITs) - Affects Flags: N V Z " />
+<instruction command="bit.zp" description="BIT (test BITs) - Affects Flags: N V Z " />
+<instruction command="bmi" description="BMI (Branch on MInus) - Affect Flags: none" />
+<instruction command="bne" description="BNE (Branch on Not Equal) - Affect Flags: none" />
+<instruction command="bpl" description="BPL (Branch on PLus) - Affect Flags: none" />
+<instruction command="brk" description="BRK (BReaK) - Affects Flags: B" />
+<instruction command="bvc" description="BVC (Branch on oVerflow Clear) - Affect Flags: none" />
+<instruction command="bvs" description="BVS (Branch on oVerflow Set) - Affect Flags: none" />
+<instruction command="clc" description="CLC (CLear Carry)" />
+<instruction command="cld" description="CLD (CLear Decimal)" />
+<instruction command="cli" description="CLI (CLear Interrupt)" />
+<instruction command="clv" description="CLV (CLear oVerflow)" />
+<instruction command="cmp" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
+<instruction command="cmp.z" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
+<instruction command="cmp.zp" description="CMP (CoMPare accumulator) - Affects Flags: S Z C" />
+<instruction command="cpx" description="CPX (ComPare X register) - Affects Flags: S Z C" />
+<instruction command="cpx.z" description="CPX (ComPare X register) - Affects Flags: S Z C" />
+<instruction command="cpx.zp" description="CPX (ComPare X register) - Affects Flags: S Z C" />
+<instruction command="cpy" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
+<instruction command="cpy.z" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
+<instruction command="cpy.zp" description="CPY (ComPare Y register) - Affects Flags: S Z C" />
+<instruction command="dec" description="DEC (DECrement memory) - Affects Flags: S Z" />
+<instruction command="dec.z" description="DEC (DECrement memory) - Affects Flags: S Z" />
+<instruction command="dec.zp" description="DEC (DECrement memory) - Affects Flags: S Z" />
+<instruction command="dex" description="DEX (DEcrement X) - Affect Flags: S Z" />
+<instruction command="dey" description="DEY (DEcrement Y) - Affect Flags: S Z" />
+<instruction command="eor" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
+<instruction command="eor.z" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
+<instruction command="eor.zp" description="EOR (bitwise Exclusive OR) - Affects Flags: S Z" />
+<instruction command="inc" description="INC (INCrement memory) - Affects Flags: S Z" />
+<instruction command="inc.z" description="INC (INCrement memory) - Affects Flags: S Z" />
+<instruction command="inc.zp" description="INC (INCrement memory) - Affects Flags: S Z" />
+<instruction command="inx" description="INX (INcrement X) - Affect Flags: S Z" />
+<instruction command="iny" description="INY (INcrement Y) - Affect Flags: S Z" />
+<instruction command="jmp" description="JMP (JuMP) - Affects Flags: none" />
+<instruction command="jsr" description="JSR (Jump to SubRoutine) - Affects Flags: none" />
+<instruction command="lda" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
+<instruction command="lda.z" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
+<instruction command="lda.zp" description="LDA (LoaD Accumulator) - Affects Flags: S Z" />
+<instruction command="ldx" description="LDX (LoaD X register) - Affects Flags: S Z" />
+<instruction command="ldx.z" description="LDX (LoaD X register) - Affects Flags: S Z" />
+<instruction command="ldx.zp" description="LDX (LoaD X register) - Affects Flags: S Z" />
+<instruction command="ldy" description="LDY (LoaD Y register) - Affects Flags: S Z" />
+<instruction command="ldy.z" description="LDY (LoaD Y register) - Affects Flags: S Z" />
+<instruction command="ldy.zp" description="LDY (LoaD Y register) - Affects Flags: S Z" />
+<instruction command="lsr" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
+<instruction command="lsr.z" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
+<instruction command="lsr.zp" description="LSR (Logical Shift Right) - Affects Flags: S Z C" />
+<instruction command="nop" description="NOP (No OPeration) - Affects Flags: none" />
+<instruction command="ora" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
+<instruction command="ora.z" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
+<instruction command="ora.zp" description="ORA (bitwise OR with Accumulator) - Affects Flags: S Z" />
+<instruction command="pha" description="PHA (PusH Accumulator)" />
+<instruction command="php" description="PHP (PusH Processor status)" />                                                                         
+<instruction command="pla" description="PLA (PuLl Accumulator)" />
+<instruction command="plp" description="PLP (PuLl Processor status)" />
+<instruction command="rol" description="ROL (ROtate Left) - Affects Flags: S Z C" />
+<instruction command="rol.z" description="ROL (ROtate Left) - Affects Flags: S Z C" />
+<instruction command="rol.zp" description="ROL (ROtate Left) - Affects Flags: S Z C" />
+<instruction command="ror" description="ROR (ROtate Right) - Affects Flags: S Z     C" />
+<instruction command="ror.z" description="ROR (ROtate Right) - Affects Flags: S Z   C" />
+<instruction command="ror.zp" description="ROR (ROtate Right) - Affects Flags: S Z  C" />
+<instruction command="rti" description="RTI (ReTurn from Interrupt) - Affects Flags: all" />
+<instruction command="rts" description="RTS (ReTurn from Subroutine) - Affects Flags: none" />
+<instruction command="sbc" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
+<instruction command="sbc.z" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
+<instruction command="sbc.zp" description="SBC (SuBtract with Carry) - Affects Flags: S V Z C" />
+<instruction command="sec" description="SEC (SEt Carry)" />
+<instruction command="sed" description="SED (SEt Decimal)" />
+<instruction command="sei" description="SEI (SEt Interrupt)" />
+<instruction command="sta" description="STA (STore Accumulator) - Affects Flags: none" />
+<instruction command="sta.z" description="STA (STore Accumulator) - Affects Flags: none" />
+<instruction command="sta.zp" description="STA (STore Accumulator) - Affects Flags: none" />
+<instruction command="stx" description="STX (STore X register) - Affects Flags: none" />
+<instruction command="stx.z" description="STX (STore X register) - Affects Flags: none" />
+<instruction command="stx.zp" description="STX (STore X register) - Affects Flags: none" />
+<instruction command="sty" description="STY (STore Y register) - Affects Flags: none" />
+<instruction command="sty.z" description="STY (STore Y register) - Affects Flags: none" />
+<instruction command="sty.zp" description="STY (STore Y register) - Affects Flags: none" />
+<instruction command="tax" description="TAX (Transfer A to X)" />
+<instruction command="tay" description="TAY (Transfer A to Y)" />
+<instruction command="tsx" description="TSX (Transfer Stack ptr to X)" />
+<instruction command="txa" description="TXA (Transfer X to A)" />
+<instruction command="txs" description="TXS (Transfer X to Stack ptr)" />
+<instruction command="tya" description="TYA (Transfer Y to A)" />
 
-<instruction command="AHX" description="Illegal opcode" />
-<instruction command="ALR" description="Illegal opcode" />
-<instruction command="ANC" description="Illegal opcode" />
-<instruction command="ANC2" description="Illegal opcode" />
-<instruction command="ARR" description="Illegal opcode" />
-<instruction command="AXS" description="Illegal opcode" />
-<instruction command="DCP" description="Illegal opcode" />
-<instruction command="ISC" description="Illegal opcode" />
-<instruction command="LAS" description="Illegal opcode" />
-<instruction command="LAX" description="Illegal opcode" />
-<instruction command="RRA" description="Illegal opcode" />
-<instruction command="SAX" description="Illegal opcode" />
-<instruction command="SHX" description="Illegal opcode" />
-<instruction command="SHY" description="Illegal opcode" />
-<instruction command="SLO" description="Illegal opcode" />
-<instruction command="SRE" description="Illegal opcode" />
-<instruction command="TAS" description="Illegal opcode" />
-<instruction command="XAA" description="Illegal opcode" />
+<instruction command="ahx" description="Illegal opcode" />
+<instruction command="alr" description="Illegal opcode" />
+<instruction command="anc" description="Illegal opcode" />
+<instruction command="anc2" description="Illegal opcode" />
+<instruction command="arr" description="Illegal opcode" />
+<instruction command="axs" description="Illegal opcode" />
+<instruction command="dcp" description="Illegal opcode" />
+<instruction command="isc" description="Illegal opcode" />
+<instruction command="las" description="Illegal opcode" />
+<instruction command="lax" description="Illegal opcode" />
+<instruction command="rra" description="Illegal opcode" />
+<instruction command="sax" description="Illegal opcode" />
+<instruction command="shx" description="Illegal opcode" />
+<instruction command="shy" description="Illegal opcode" />
+<instruction command="slo" description="Illegal opcode" />
+<instruction command="sre" description="Illegal opcode" />
+<instruction command="tas" description="Illegal opcode" />
+<instruction command="xaa" description="Illegal opcode" />
 
-<instruction command="BRA" description="DTV opcode" />
-<instruction command="SAC" description="DTV opcode" />
-<instruction command="SIR" description="DTV opcode" />
+<instruction command="bra" description="DTV opcode" />
+<instruction command="sac" description="DTV opcode" />
+<instruction command="sir" description="DTV opcode" />   
   
 <!-- kick assembler instructions -->   
-<segment field=".IMPORT" description="Assembler directive imports and external file" />
-<segment field=".IMPORTONCE" description="Assembler directive imports and external file" />
-<segment field=".VAR" description="Assembler directive " />
-<segment field=".RETURN" description="Assembler directive " />
-<segment field=".EVAL" description="Assembler directive " />
-<segment field=".BYTE" description="Assembler directive that defines bytes" />
-<segment field=".WORD" description="" />
-<segment field=".DWORD" description="" />
-<segment field=".TEXT" description="" />
-<segment field=".PLUGIN" description="" />
-<segment field=".MODIFY" description="" />
-<segment field=".FILEMODIFY" description="" />
+<segment field=".import" description="assembler directive imports and external file" />
+<segment field=".importonce" description="assembler directive imports and external file" />
+<segment field=".var" description="assembler directive " />
+<segment field=".return" description="assembler directive " />
+<segment field=".eval" description="assembler directive " />
+<segment field=".byte" description="assembler directive that defines bytes" />
+<segment field=".word" description="" />
+<segment field=".dword" description="" />
+<segment field=".text" description="" />
+<segment field=".plugin" description="" />
+<segment field=".modify" description="" />
+<segment field=".filemodify" description="" />
 
-<segment field=".FILL" description="Assembler directive that defines bytes" />
-<segment field=".STRUCT" description="Assembler directive that defines the program instructions." />
-<segment field=".FOR" description="Assembler directive that defines the memory model to use in the program." />
-<segment field=".PRINT" description="Assembler directive that defines the memory model to use in the program." />
-<segment field=".PRINTNOW" description="Assembler directive that defines the memory model to use in the program." />
-<segment field=".FUNCTION" description="Assembler directive that defines the memory model to use in the program." />
-<segment field=".MACRO" description="Assembler directive that defines the memory model to use in the program." />
-<segment field=".PSEUDOCOMMAND" description="macro definition" />
-<segment field=".ASSERTERROR" description="" />
-<segment field=".ASSERT" description="" />
-<segment field=".ERROR" description="" />
-<segment field=".DEFINE" description="" />
-<segment field=".PC" description="" />
-<segment field=".ALIGN" description="" />
-<segment field=".PSEUDOPC" description="" />
-<segment field=".IF" description="" />
-<segment field=".CONST" description="" />
-<segment field=".LABEL" description="" />
-<segment field=".ENUM" description="" />
-<segment field=".FILENAMESPACE" description="" />
-<segment field=".NAMESPACE" description="" />
+<segment field=".fill" description="assembler directive that defines bytes" />
+<segment field=".struct" description="assembler directive that defines the program instructions." />
+<segment field=".for" description="assembler directive that defines the memory model to use in the program." />
+<segment field=".print" description="assembler directive that defines the memory model to use in the program." />
+<segment field=".printnow" description="assembler directive that defines the memory model to use in the program." />
+<segment field=".function" description="assembler directive that defines the memory model to use in the program." />
+<segment field=".macro" description="assembler directive that defines the memory model to use in the program." />
+<segment field=".pseudocommand" description="macro definition" />
+<segment field=".asserterror" description="" />
+<segment field=".assert" description="" />
+<segment field=".error" description="" />
+<segment field=".define" description="" />
+<segment field=".pc" description="" />
+<segment field=".align" description="" />
+<segment field=".pseudopc" description="" />
+<segment field=".if" description="" />
+<segment field=".const" description="" />
+<segment field=".label" description="" />
+<segment field=".enum" description="" />
+<segment field=".filenamespace" description="" />
+<segment field=".namespace" description="" />                                                                                                    
+~                                              
   
-<class field="LIST" description="" />
-<class field="HASHTABLE" description="" />
-<class field="MATRIX" description="" />
-<class field="ROTATIONMATRIX" description="" />
-<class field="SCALEMATRIX" description="" />
-<class field="MOVEMATRIX" description="" />
-<class field="PERSPECTIVEMATRIX" description="" />
+<class field="List" description="" />
+<class field="Hashtable" description="" />
+<class field="Matrix" description="" />
+<class field="RotataionMatrix" description="" />
+<class field="ScaleMatrix" description="" />
+<class field="MoveMatrix" description="" />
+<class field="PerspectiveMatrix" description="" />
 
-<function field="TOINTSTRING" description="" />
-<function field="TOBINARYSTRING" description="" />
-<function field="TOOCTALSTRING" description="" />
-<function field="TOHEXSTRING" description="" />
-<function field="LOADBINARY" description="" /> 
-<function field="LOADPICTURE" description="" /> 
-<function field="LOADSID" description="" />
-<function field="CREATEFILE" description="" />
+<function field="toIntString" description="" />
+<function field="toBinaryString" description="" />
+<function field="toOctalString" description="" />
+<function field="toHexString" description="" />
+<function field="LoadBinary" description="" /> 
+<function field="LoadPicture" description="" /> 
+<function field="LoadSid" description="" />
+<function field="createFile" description="" />
 
-<method field=".SIZE" description="" />
-<method field=".REMOVE" description="" />
-<method field=".SHUFFLE" description="" /> 
-<method field=".CHARAT" description="" />
-<method field=".SUBSTRING" description="" />
-<method field=".ASNUMBER" description="" />
-<method field=".ASBOOLEAN" description="" />
-<method field=".GETPIXEL" description="" />
-<method field=".GETSINGLECOLORBYTE" description="" />
-<method field=".GETMULTICOLORBYTE" description="" />
-<method field=".WRITELN" description="" />
+<method field=".size" description="" />
+<method field=".remove" description="" />
+<method field=".shuffle" description="" /> 
+<method field=".charAt" description="" />
+<method field=".substring" description="" />
+<method field=".asNumber" description="" />
+<method field=".asBoolean" description="" />
+<method field=".getPixel" description="" />
+<method field=".getSinglecolorByte" description="" />
+<method field=".getMulticolorByte" description="" />
+<method field=".writeln" description="" />
+<method field=".width" description="" />
+<method field=".height" description="" />
 
 <constant field="BF_C64FILE" description="" />
 <constant field="BF_BITMAP_SINGLECOLOR" description="" />
 <constant field="BF_KOALA" description="" />
 <constant field="BF_FLI" description="" />
+<constant field="PI" description="" />
+<constant field="E" description="" />
+<constant field="BLACK" description="" />
+<constant field="WHITE" description="" />
+<constant field="RED" description="" />
+<constant field="CYAN" description="" />
+<constant field="PURPLE" description="" />
+<constant field="GREEN" description="" />
+<constant field="BLUE" description="" />
+<constant field="YELLOW" description="" />
+<constant field="ORANGE" description="" />
+<constant field="BROWN" description="" />
+<constant field="LIGHT_RED" description="" />
+<constant field="DARK_GRAY" description="" />
+<constant field="DARK_GREY" description="" />
+<constant field="GRAY" description="" />
+<constant field="GREY" description="" />
+<constant field="LIGHT_GREEN" description="" />
+<constant field="LIGHT_BLUE" description="" />
+<constant field="LIGHT_GRAY" description="" />
+<constant field="LIGHT_GREY" description="" />
 
 <!-- kick assembler math library instructions -->   
-<function field="ABS" description="Returns the absolute (positive) value of x" />
-<function field="ACOS" description="Returns the arc cosine of x" />
-<function field="ASIN" description="Returns the arc sine of x" />
-<function field="ATAN" description="Returns the arc tangent x" />
-<function field="ATAN2" description="Returns the angle of the coordinate (x,y) relative to the positive x-axis." />
-<function field="CBRT" description="Returns the cube root of x" />
-<function field="CEIL" description="Rounds up to the nearest integer." />
-<function field="COS" description="Returns the cosine of r" />
-<function field="COSH" description="Returns the hyperbolic cosine of r" />
-<function field="EXP" description="Returns ex" />
-<function field="EXPM1" description="Returns ex-1" />
-<function field="FLOOR" description="Rounds down to the nearest integer" />
-<function field="HYPOT" description="Returns sqrt(x2+y2)" />
-<function field="IEEEREMAINDER" description="Returns the remainder of the two numbers as described in the IEEE 754 standard." />
-<function field="LOG" description="Returns the natural logarithm of x" />
-<function field="LOG10" description="Returns the base 10 logarithm of x" />
-<function field="LOG1P" description="Returns log(x+1)" />
-<function field="MAX" description="Returns the highest number of x and y" />
-<function field="MIN" description="Returns the smallest number of x and y" />
-<function field="POW" description="Returns xy" />
-<function field="MOD" description="Converts a and b to integers and returns the remainder of a/b" />
-<function field="RANDOM" description="Returns a random number x where 0 ? x &lt; 1" />
-<function field="ROUND" description="Rounds x to the nearest integer" />
-<function field="SIGNUM" description="Returns 1 if x&gt;0, -1 if x&lt;0 and 0 if x=0" />
-<function field="SIN" description="Returns the sine of r" />
-<function field="SINH" description="Returns the hyperbolic sine of x" />
-<function field="SQRT" description="Returns the square root of x" />
-<function field="TAN" description="Returns the tangent of r" />
-<function field="TANH" description="Returns the hyperbolic tangent of x" />
-<function field="TODEGREES" description="Converts a radian angle to degrees" />
-<function field="TORADIANS" description="Converts a degree" />
-
- 
+<function field="abs" description="returns the absolute (positive) value of x" />
+<function field="acos" description="returns the arc cosine of x" />
+<function field="asin" description="returns the arc sine of x" />
+<function field="atan" description="returns the arc tangent x" />
+<function field="atan2"
+    description="Returns the angle of the coordinate (x,y) relative to the positive x-axis." />
+<function field="cbrt" description="returns the cube root of x" />
+<function field="ceil" description="rounds up to the nearest integer." />
+<function field="cos" description="returns the cosine of r" />
+<function field="cosh" description="returns the hyperbolic cosine of r" />
+<function field="exp" description="returns ex" />
+<function field="expm1" description="returns ex-1" />
+<function field="floor" description="rounds down to the nearest integer" />
+<function field="hypot" description="returns sqrt(x2+y2)" />
+<function field="IEEEremainder"
+    description="Returns the remainder of the two numbers as described in the IEEE 754 standard." />
+<function field="log" description="returns the natural logarithm of x" />
+<function field="log10" description="returns the base 10 logarithm of x" />
+<function field="log1p" description="returns log(x+1)" />
+<function field="max" description="returns the highest number of x and y" />
+<function field="min" description="returns the smallest number of x and y" />
+<function field="pow" description="returns xy" />
+<function field="mod"
+    description="Converts a and b to integers and returns the remainder of a/b" />
+<function field="random" description="returns a random number x where 0 ? x &lt; 1" />
+<function field="round" description="rounds x to the nearest integer" />
+<function field="signum"
+    description="Returns 1 if x&gt;0, -1 if x&lt;0 and 0 if x=0" />
+<function field="sin" description="returns the sine of r" />
+<function field="sinh" description="returns the hyperbolic sine of x" />
+<function field="sqrt" description="returns the square root of x" />
+<function field="tan" description="returns the tangent of r" />
+<function field="tanh" description="returns the hyperbolic tangent of x" />
+<function field="toDegrees" description="converts a radian angle to degrees" />
+<function field="toRadians" description="converts a degree" />             
   
 </sets>
 

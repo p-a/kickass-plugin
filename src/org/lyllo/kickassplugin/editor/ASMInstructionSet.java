@@ -23,7 +23,7 @@ package org.lyllo.kickassplugin.editor;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.xml.parsers.SAXParser;
@@ -45,15 +45,15 @@ import org.xml.sax.helpers.DefaultHandler;
  * @since 24.02.2006
  */
 public final class ASMInstructionSet {
-  private static HashMap<String, String> instructionMap = null;
+  private static TreeMap<String, String> instructionMap = null;
 
-  private static HashMap<String, String> segmentMap = null;
+  private static TreeMap<String, String> segmentMap = null;
 
-  private static HashMap<String, String> functionMap = null;
+  private static TreeMap<String, String> functionMap = null;
 
-  private static HashMap<String, String> constantMap = null;
+  private static TreeMap<String, String> constantMap = null;
 
-  private static HashMap<String, String> classMap = null;
+  private static TreeMap<String, String> classMap = null;
 
   private static String[][] sortedInstructionArray = null;
 
@@ -77,7 +77,7 @@ public final class ASMInstructionSet {
    * 
    * @return The instructions.
    */
-  public static HashMap<String, String> getInstructions() {
+  public static TreeMap<String, String> getInstructions() {
     if (instructionMap == null) {
       loadXMLData();
     }
@@ -90,7 +90,7 @@ public final class ASMInstructionSet {
    * 
    * @return The segments.
    */
-  public static HashMap<String, String> getSegments() {
+  public static TreeMap<String, String> getSegments() {
     if (segmentMap == null) {
       loadXMLData();
     }
@@ -98,7 +98,7 @@ public final class ASMInstructionSet {
     return segmentMap;
   }
   
-  public static HashMap<String, String> getFunctions() {
+  public static TreeMap<String, String> getFunctions() {
 	    if (functionMap == null) {
 	      loadXMLData();
 	    }
@@ -106,7 +106,7 @@ public final class ASMInstructionSet {
 	    return functionMap;
 	  }
 
-  public static HashMap<String, String> getClasses() {
+  public static TreeMap<String, String> getClasses() {
 	    if (classMap == null) {
 	      loadXMLData();
 	    }
@@ -114,7 +114,7 @@ public final class ASMInstructionSet {
 	    return classMap;
 	  }
   
-  public static HashMap<String, String> getConstants() {
+  public static TreeMap<String, String> getConstants() {
 	    if (constantMap == null) {
 	      loadXMLData();
 	    }
@@ -196,7 +196,7 @@ public final class ASMInstructionSet {
           } else if (qName.equals("constant")) {
         	  constantMap.put(attributes.getValue("field"), attributes.getValue("description"));
           } else if (qName.equals("class")) {
-        	  classMap.put(attributes.getValue("field"), attributes.getValue("description"));
+        	  classMap.put(attributes.getValue("field").toLowerCase(), attributes.getValue("description"));
           }
         }
       });
@@ -220,23 +220,20 @@ public final class ASMInstructionSet {
     
   }
 
-private static void makeSortedArray(HashMap<String, String> map, String[][]array) {
-	Vector<String> sortVector;
-	sortVector = new Vector<String>(map.keySet());
-    Collections.sort(sortVector);
+private static void makeSortedArray(TreeMap<String, String> map, String[][]array) {
     int pos = 0;
 
-    for (String element : sortVector) {
-      array[pos][0] = new String(element);
-      array[pos][1] = new String(element.toLowerCase());
-      array[pos][2] = new String((String) map.get(element));
+    for (String element :  map.keySet()) {
+      array[pos][0] = element;
+      array[pos][1] = element.toLowerCase();
+      array[pos][2] = map.get(element);
       pos++;
     }
 }
 
-private static HashMap<String, String> clearMap(HashMap<String, String> map) {
+private static TreeMap<String, String> clearMap(TreeMap<String, String> map) {
 	if (map == null) {
-      map = new HashMap<String, String>();
+      map = new TreeMap<String, String>();
     } else {
       map.clear();
     }
