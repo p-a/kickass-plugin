@@ -119,7 +119,7 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 				if (!Character.isWhitespace(c))
 					buf.append((char)c);
 				
-				while ((c=scanner.read()) != ICharacterScanner.EOF && !Character.isWhitespace(c)){
+				while ((c=scanner.read()) != ICharacterScanner.EOF && !Character.isWhitespace(c) ){
 					count++;
 					buf.append((char)c);
 				}
@@ -173,13 +173,17 @@ public class ASMCodeScanner extends RuleBasedScanner implements IPropertyChangeL
 				if(scanner.read() == ':'){
 					StringBuffer buf = new StringBuffer();
 					int c = 0;
-					while ((c=scanner.read()) != ICharacterScanner.EOF && Character.isJavaIdentifierPart(c)){
+					while ((c=scanner.read()) != ICharacterScanner.EOF && c != '(' && Character.isJavaIdentifierPart(c)){
 						count++;
 						buf.append((char)c);
 					}
 					if (Character.isWhitespace(c) || c =='(' || scanner.getColumn()==0){
 						token = segmentToken;
-						tokenFound(new ITokenMatch(buf.toString(), scanner.getColumn(), token));
+						int column = scanner.getColumn();
+						tokenFound(new ITokenMatch(buf.toString(), column, token));
+						if (c == '('){
+							scanner.unread();
+						}
 					}
 				}
 

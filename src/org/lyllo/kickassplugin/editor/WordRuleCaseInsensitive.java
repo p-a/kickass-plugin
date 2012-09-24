@@ -81,13 +81,13 @@ private IRuleListener listener;
   public IToken evaluate(ICharacterScanner scanner) {
     int c = 0;
 
-    if (scanner.getColumn() > 0) {
-      scanner.unread();
-      c = scanner.read();
-      if (!Character.isWhitespace((char) c)) {
-        return fDefaultToken;
-      }
-    }
+//    if (scanner.getColumn() > 0) {
+//      scanner.unread();
+//      c = scanner.read();
+//      if (!Character.isWhitespace((char) c)) {
+//        return fDefaultToken;
+//      }
+//    }
 
     c = scanner.read();
     if (!caseSensitive)
@@ -159,14 +159,14 @@ public void setCaseSensitive(boolean caseSensitive) {
      * {@inheritDoc}
      */
     public boolean isWordStart(char c) {
-      return ((c > ' ') && (c <= '~'));
+      return isWordPart(c); // (c != ',' && (c > ' ') && (c <= '~'));
     }
 
     /**
      * {@inheritDoc}
      */
     public boolean isWordPart(char c) {
-      return ((c > ' ') && (c <= '~'));
+      return (c != '{' && c != '}' && c != ',' && c != '(' && c != ')' && (c > ' ') && (c <= '~'));
     }
   }
 }
