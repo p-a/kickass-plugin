@@ -1,10 +1,10 @@
 /*
  Kick Assembler plugin - An Eclipse plugin for convenient Kick Assembling
  Copyright (c) 2012 - P-a Backstrom <pa.backstrom@gmail.com>
- 
+
  Based on ASMPlugin - http://sourceforge.net/projects/asmplugin/
  Copyright (c) 2006 - Andy Reek, D. Mitte
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/ 
+ */ 
 package org.lyllo.kickassplugin.editor;
 
 import org.eclipse.jface.text.rules.ICharacterScanner;
@@ -35,138 +35,144 @@ import org.eclipse.jface.text.rules.WordRule;
  */
 public class WordRuleCaseInsensitive extends WordRule {
 
-  /**
-   * Buffer used for pattern detection
-   */
-  private StringBuffer fBuffer = new StringBuffer();
-  private boolean caseSensitive = false;
-private IRuleListener listener;
+	/**
+	 * Buffer used for pattern detection
+	 */
+	private StringBuffer fBuffer = new StringBuffer();
+	private boolean caseSensitive = false;
+	private IRuleListener listener;
 
-  /**
-   * The constructor.
-   */
-  public WordRuleCaseInsensitive(IRuleListener listener) {
-    this(Token.UNDEFINED, listener);
-  }
+	/**
+	 * The constructor.
+	 */
+	public WordRuleCaseInsensitive(IRuleListener listener) {
+		this(Token.UNDEFINED, listener);
+	}
 
-  /**
-   * Creates a rule which. If no token has been associated, the specified
-   * default token will be returned.
-   * 
-   * @param  the default token to be returned on success if nothing
-   *          else is specified, may not be <code>null</code>
-   * 
-   * @see #addWord(String, IToken)
-   */
-  public WordRuleCaseInsensitive(IToken defaultToken, IRuleListener listener) {
-    super(new IWordDetector() { // A dummy. WordDetector will be
-            // replaced a
-            // few rows below.
-            public boolean isWordPart(char c) {
-              return false;
-            }
+	/**
+	 * Creates a rule which. If no token has been associated, the specified
+	 * default token will be returned.
+	 * 
+	 * @param  the default token to be returned on success if nothing
+	 *          else is specified, may not be <code>null</code>
+	 * 
+	 * @see #addWord(String, IToken)
+	 */
+	public WordRuleCaseInsensitive(IToken defaultToken, IRuleListener listener) {
+		super(new IWordDetector() { // A dummy. WordDetector will be
+			// replaced a
+			// few rows below.
+			public boolean isWordPart(char c) {
+				return false;
+			}
 
-            public boolean isWordStart(char c) {
-              return false;
-            }
-          } );
+			public boolean isWordStart(char c) {
+				return false;
+			}
+		} );
 
-    fDetector = new MyWordDetector();
-    this.listener = listener;
-  }
+		fDetector = new MyWordDetector();
+		this.listener = listener;
+	}
 
-  /**
-   * {@inheritDoc}
-   */
-  public IToken evaluate(ICharacterScanner scanner) {
-    int c = 0;
+	/**
+	 * {@inheritDoc}
+	 */
+	public IToken evaluate(ICharacterScanner scanner) {
+		int c = 0;
 
-//    if (scanner.getColumn() > 0) {
-//      scanner.unread();
-//      c = scanner.read();
-//      if (!Character.isWhitespace((char) c)) {
-//        return fDefaultToken;
-//      }
-//    }
+		if (scanner.getColumn() > 0) {
+			scanner.unread();
+			c = scanner.read();
+			if (isValidChar((char)c)) {
+				return fDefaultToken;
+			}
+		}
 
-    c = scanner.read();
-    if (!caseSensitive)
-    	c = Character.toLowerCase((char) c);
-    if (fDetector.isWordStart((char) c)) {
-      if (fColumn == UNDEFINED || (fColumn == scanner.getColumn() - 1)) {
+		c = scanner.read();
+		if (!caseSensitive)
+			c = Character.toLowerCase((char) c);
+		if (fDetector.isWordStart((char) c)) {
+			if (fColumn == UNDEFINED || (fColumn == scanner.getColumn() - 1)) {
 
-        fBuffer.setLength(0);
-        do {
-          fBuffer.append((char) c);
-          c = scanner.read();
-          if (!caseSensitive)
-        	  c = Character.toLowerCase((char) c);
-        } while (c != ICharacterScanner.EOF && c!= '(' && fDetector.isWordPart((char) c));
-        scanner.unread();
+				fBuffer.setLength(0);
+				do {
+					fBuffer.append((char) c);
+					c = scanner.read();
+					if (!caseSensitive)
+						c = Character.toLowerCase((char) c);
+				} while (c != ICharacterScanner.EOF && c!= '(' && fDetector.isWordPart((char) c));
+				scanner.unread();
 
-        IToken token = (IToken) fWords.get(fBuffer.toString());
-        if (token != null) {
-        	this.listener.tokenFound(new ITokenMatch(fBuffer.toString(), scanner.getColumn(), token));
-          return token;
-        }
+				IToken token = (IToken) fWords.get(fBuffer.toString());
+				if (token != null) {
+					this.listener.tokenFound(new ITokenMatch(fBuffer.toString(), scanner.getColumn(), token));
+					return token;
+				}
 
-        if (fDefaultToken.isUndefined()) {
-          unreadBuffer(scanner);
-        }
+				if (fDefaultToken.isUndefined()) {
+					unreadBuffer(scanner);
+				}
 
-        return fDefaultToken;
-      }
-    }
+				return fDefaultToken;
+			}
+		}
 
-    scanner.unread();
-    return Token.UNDEFINED;
-  }
+		scanner.unread();
+		return Token.UNDEFINED;
+	}
 
-  /**
-   * {@inheritDoc}
-   */
-  public void addWord(String word, IToken token) {
-    super.addWord(caseSensitive ? word : word.toLowerCase(), token);
-  }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void addWord(String word, IToken token) {
+		super.addWord(caseSensitive ? word : word.toLowerCase(), token);
+	}
 
-  /**
-   * Returns the characters in the buffer to the scanner.
-   * 
-   * @param scanner the scanner to be used
-   */
-  protected void unreadBuffer(ICharacterScanner scanner) {
-    for (int i = fBuffer.length() - 1; i > -1; i--) {
-      scanner.unread();
-    }
-  }
+	/**
+	 * Returns the characters in the buffer to the scanner.
+	 * 
+	 * @param scanner the scanner to be used
+	 */
+	protected void unreadBuffer(ICharacterScanner scanner) {
+		for (int i = fBuffer.length() - 1; i > -1; i--) {
+			scanner.unread();
+		}
+	}
 
-  public boolean isCaseSensitive() {
-	return caseSensitive;
-}
+	public boolean isCaseSensitive() {
+		return caseSensitive;
+	}
 
-public void setCaseSensitive(boolean caseSensitive) {
-	this.caseSensitive = caseSensitive;
-}
+	public void setCaseSensitive(boolean caseSensitive) {
+		this.caseSensitive = caseSensitive;
+	}
 
-/**
-   * A WordDetector, which recognizes all typable characters.
-   * 
-   * @author andre
-   * 
-   */
-  private class MyWordDetector implements IWordDetector {
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isWordStart(char c) {
-      return isWordPart(c); // (c != ',' && (c > ' ') && (c <= '~'));
-    }
+	/**
+	 * A WordDetector, which recognizes all typable characters.
+	 * 
+	 * @author andre
+	 * 
+	 */
+	private class MyWordDetector implements IWordDetector {
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean isWordStart(char c) {
+			return isValidChar(c); // (c != ',' && (c > ' ') && (c <= '~'));
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isWordPart(char c) {
-      return (c != '{' && c != '}' && c != ',' && c != '(' && c != ')' && (c > ' ') && (c <= '~'));
-    }
-  }
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean isWordPart(char c) {
+			return isValidChar(c);
+			//return (c != '{' && c != '}' && c != ',' && c != '(' && c != ')' && (c > ' ') && (c <= '~'));
+		}
+	}
+
+	public static boolean isValidChar(char c){
+
+		return ( c!= ';' && c != '{' && c != '}' && c != ',' && c != '(' && c != ')' && (c > ' ') && (c <= '~'));	
+	}
 }
