@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 public class AutocompletionCollector implements IResourceChangeListener, IResourceDeltaVisitor, IResourceVisitor{
 
@@ -148,10 +150,21 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							Matcher matcher = pattern.matcher(line);
 							
 							if (matcher.matches()) {
-								IPath importPath = file.getParent().getProjectRelativePath().append(matcher.group(1));
-								IFile importedFile = file.getProject().getFile(importPath);
-								if (importedFile.exists()){
-									imports.add(importPath.toString());
+								List<String> split = new ArrayList<String>();
+								split.addAll(Arrays.asList(ProjectPrefenceHelper.getSourceDirs(file.getProject())));
+								if (split.isEmpty()){
+									split.add(Constants.DEFAULT_SRC_DIRECTORY);
+								}
+								
+								split.addAll(Arrays.asList(ProjectPrefenceHelper.getLibDirs(file.getProject())));
+								
+								for (int i = 0; i < split.size(); i++ ){
+									IPath importPath = file.getProject().getFolder(split.get(i)).getProjectRelativePath().append(matcher.group(1));
+									IFile importedFile = file.getProject().getFile(importPath);
+									if (importedFile.exists()){
+										imports.add(importPath.toString());
+									}
+								
 								}
 							}
 						}
