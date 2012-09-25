@@ -159,10 +159,13 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 								split.addAll(Arrays.asList(ProjectPrefenceHelper.getLibDirs(file.getProject())));
 								
 								for (int i = 0; i < split.size(); i++ ){
-									IPath importPath = file.getProject().getFolder(split.get(i)).getProjectRelativePath().append(matcher.group(1));
-									IFile importedFile = file.getProject().getFile(importPath);
-									if (importedFile.exists()){
-										imports.add(importPath.toString());
+									String folder = split.get(i);
+									if (!"".equals(folder)){
+										IPath importPath = file.getProject().getFolder(folder).getProjectRelativePath().append(matcher.group(1));
+										IFile importedFile = file.getProject().getFile(importPath);
+										if (importedFile.exists()){
+											imports.add(importPath.toString());
+										}
 									}
 								
 								}

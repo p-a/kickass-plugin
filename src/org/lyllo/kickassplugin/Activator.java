@@ -28,18 +28,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.lyllo.kickassplugin.editor.ASMEditor;
 import org.lyllo.kickassplugin.ui.OutputConsole;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 
@@ -91,9 +92,18 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this; 
+
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(autocompletionCollector);
 		
-		autocompletionCollector.init();
+		Job job = new Job("Autocollector init") {
+		     protected IStatus run(IProgressMonitor monitor) {
+		    	 autocompletionCollector.init();  
+		           return Status.OK_STATUS;
+		        }
+
+		    };
+		  job.setPriority(Job.LONG);
+		  job.schedule(); 		
 		
 		 ISaveParticipant saveParticipant = new KickassSaveParticipant();
 		 ISavedState lastState =
@@ -103,6 +113,7 @@ public class Activator extends AbstractUIPlugin {
 		   }		
 		
 	}
+	
 	
 
 	/**
