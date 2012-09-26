@@ -36,7 +36,6 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -48,14 +47,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.lyllo.kickassplugin.editor.ASMEditor;
 import org.lyllo.kickassplugin.ui.OutputConsole;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements BundleListener {
 
 	/**
 	 * The shared instance.
@@ -95,16 +95,8 @@ public class Activator extends AbstractUIPlugin {
 
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(autocompletionCollector);
 		
-		Job job = new Job("Autocollector init") {
-		     protected IStatus run(IProgressMonitor monitor) {
-		    	 autocompletionCollector.init();  
-		           return Status.OK_STATUS;
-		        }
+		context.addBundleListener(this);
 
-		    };
-		  job.setPriority(Job.LONG);
-		  job.schedule(); 		
-		
 		 ISaveParticipant saveParticipant = new KickassSaveParticipant();
 		 ISavedState lastState =
 		      ResourcesPlugin.getWorkspace().addSaveParticipant(Constants.PLUGIN_ID, saveParticipant);
@@ -114,13 +106,28 @@ public class Activator extends AbstractUIPlugin {
 		
 	}
 	
-	
+	public void bundleChanged(BundleEvent arg0) {
+		if (arg0.getType() == BundleEvent.STARTED){
+			Job job = new Job("Autocollector init") {
+			     protected IStatus run(IProgressMonitor monitor) {
+			    	 autocompletionCollector.init();  
+			           return Status.OK_STATUS;
+			        }
+
+			    };
+			  job.setPriority(Job.LONG);
+			  job.schedule(); 		
+		}
+		
+	}
+
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
+		context.removeBundleListener(this);
 		plugin = null; 
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(autocompletionCollector);
 		
