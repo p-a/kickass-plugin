@@ -157,7 +157,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 								}
 								
 								split.addAll(Arrays.asList(ProjectPrefenceHelper.getLibDirs(file.getProject())));
-								
+								split.add(file.getParent().getProjectRelativePath().toString());
 								for (int i = 0; i < split.size(); i++ ){
 									String folder = split.get(i);
 									if (!"".equals(folder)){
@@ -165,7 +165,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 										IFile importedFile = file.getProject().getFile(importPath);
 										if (importedFile.exists()){
 											imports.add(importPath.toString());
-										}
+										} 
 									}
 								
 								}

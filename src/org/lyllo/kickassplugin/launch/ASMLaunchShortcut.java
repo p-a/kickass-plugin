@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -101,15 +102,20 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 	IFolder destFolder = file.getProject().getFolder(buildDir);
 
 	if (!destFolder.exists()){
+		try {
+			file.touch(new NullProgressMonitor());
+		} catch (CoreException e) {
+		}
 		return;
 	}
 	
 	String dest = destdir + File.separator + file.getName();
 	String destName = file.getName().substring(0,file.getName().lastIndexOf('.')+1)+"prg";
 	
-	if (!destFolder.getFile(destName).exists()){
+	IFile destFile = destFolder.getFile(destName);
+	if (!destFile.exists() || destFile.getModificationStamp() < file.getModificationStamp()){
 		try {
-			file.touch(null);
+			file.touch(new NullProgressMonitor());
 		} catch (CoreException e) {
 		}
 		return;

@@ -113,6 +113,10 @@
             categoryId="org.eclipse.ui.category.edit"
             id="org.lyllo.kickassplugin.toggle.comment"
             name="%command.toggle.comment.name"/>
+      <command
+            categoryId="org.eclipse.ui.category.edit"
+            id="org.lyllo.kickassplugin.trigger.build"
+            name="Trigger Build"/>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -131,6 +135,11 @@
             contextId="org.lyllo.kickassplugin.editorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+/"/>
+       <key
+            commandId="org.lyllo.kickassplugin.trigger.build"
+            contextId="org.lyllo.kickassplugin.editorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+      	    sequence="M3+F11"/>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">

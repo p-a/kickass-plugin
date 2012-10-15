@@ -132,6 +132,11 @@ public class ASMEditor extends TextEditor {
       action.setActionDefinitionId("org.lyllo.kickassplugin.toggle.comment");
       setAction("toggle.comment", action);
       markAsStateDependentAction("toggle.comment", true);
+      
+      action = new TriggerBuildAction((SourceViewer) getSourceViewer(),this.getEditorInput());
+      action.setActionDefinitionId("org.lyllo.kickassplugin.trigger.build");
+      setAction("trigger.build", action);
+      
     }
   }
 
