@@ -100,7 +100,7 @@ public class ASMLauncher extends LaunchConfigurationDelegate {
 		List<String> cmds = new ArrayList<String>();
 		cmds.add(debugger.trim());
 
-		for (String param: params.trim().split("/n")){
+		for (String param: params.trim().split("\\n")){
 			if (!"".equals(param.trim())){
 				cmds.add(param.trim());
 			}
