@@ -167,12 +167,11 @@ public class WordRuleCaseInsensitive extends WordRule {
 		 */
 		public boolean isWordPart(char c) {
 			return isValidChar(c);
-			//return (c != '{' && c != '}' && c != ',' && c != '(' && c != ')' && (c > ' ') && (c <= '~'));
 		}
 	}
 
 	public static boolean isValidChar(char c){
 
-		return ( c!= ';' && c != '{' && c != '}' && c != ',' && c != '(' && c != ')' && (c > ' ') && (c <= '~'));	
+		return ( c!= ';' && c != '{' && c != '}' && c != ',' &&  c != '<' && c != '>' && c != '[' && c != ']' && c != '+' && c != '-' && c != '|' && c != '&' && c != '^' && c != '/' && c != '*' &&  c != '(' && c != ')' && (c > ' ') && (c <= '~'));	
 	}
 }

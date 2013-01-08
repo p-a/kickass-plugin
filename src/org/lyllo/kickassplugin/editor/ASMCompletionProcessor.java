@@ -313,7 +313,7 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 			while (i > 0) {
 				char ch = document.getChar(i - 1);
 
-				if (ch <= ' ' || ch == '<' || ch == '>' || ch == '#' || ch == '!' || ch == '(' )
+				if (ch <= ' ' || ch == '<' || ch == '>' || ch == '#' || ch == '!' || ch == '(' || ch == '[' || ch == '\t' || ch == '&' || ch == '|' || ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^')
 				{
 					break;
 				}
