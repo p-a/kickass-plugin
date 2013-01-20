@@ -69,6 +69,7 @@ public class KickAssLauncher implements IStreamListener {
 					VMRunnerConfiguration vmConfig = 
 							new VMRunnerConfiguration(mainClass, classPathList.toArray(new String[]{}));
 					ILaunch launch = new Launch(null, ILaunchManager.RUN_MODE, null);
+					vmConfig.setVMArguments(new String[]{"-Djava.awt.headless=true"});
 					vmConfig.setProgramArguments(args);
 					vmConfig.setWorkingDirectory(filedir);
 					vmRunner.run(vmConfig, launch, null);
