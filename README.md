@@ -45,6 +45,12 @@ In 'Compiler' you must specify the path to Kickass.jar if you want any compilati
 Here you can also choose what flags and arguments to provide Kickass with at compilation time.
 The 'Debugger'-page holds the path to the executable X64 (VICE).  
 
+You can also specify global library directories at the compiler-page.
+Project-specific library directories are configured at the project level, easiest reached by right-clicking
+the project-folder, and choose `Build Path->Configure Build Path`.
+Here, you can configure additional source and library directories.
+Only the directories specified as source will be subject for code-completion.
+
 ### Write code
 Create `.asm` or `.s` files.
 Include files are to be named with the extension `.inc` if you want them to be detected by the plugin.
@@ -55,7 +61,7 @@ If an ordinary source file is modified, only this file is compiled. However, thi
 In the resulting build-dir you will find your compiled file. Right-click and choose 'Run prg in VICE'. This will launch X64 with the arguments specified in the preferences. 
 
 ### Debugging with breakpoints
-Labels named `breakpoint[0..9]` will trigger a break in VICE if launched as Debug.
+Labels named `breakpoint` or `breakpoint[1..9]` will trigger a break in VICE if launched as Debug.
 Of course there is always the option to provide your own scheme since you can specify commandline arguments to VICE. 
 
 
