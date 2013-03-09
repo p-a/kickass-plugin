@@ -38,13 +38,13 @@ public class BuildPathPropertyPage extends PropertyPage {
 		gridData.grabExcessHorizontalSpace = true;
 		buildPathComp.setLayoutData(gridData);
 		
-		final String projectPath = project.getLocation().toOSString();
+		final String projectPath = project.getLocation().toOSString().toLowerCase();
 
 		buildPath = new DirectoryFieldEditor(Constants.PROJECT_PREFS_BUILD_DIRECTORY_KEY, "Output folder",  buildPathComp){
 			
 			@Override
 			public void setStringValue(String val) {
-				if (val.startsWith(projectPath)){
+				if (val.toLowerCase().startsWith(projectPath)){
 					val = val.substring(projectPath.length());
 					if (val.startsWith(File.separator)){
 						val = val.substring(File.separator.length());
@@ -54,6 +54,7 @@ public class BuildPathPropertyPage extends PropertyPage {
 			}
 			
 		};
+		
 		buildPath.setEmptyStringAllowed(false);
 		buildPath.setPreferenceStore(store);
 		buildPath.load();
@@ -71,7 +72,7 @@ public class BuildPathPropertyPage extends PropertyPage {
 			protected String getNewInputObject() {
 
 				String val = super.getNewInputObject();
-				if (val.startsWith(projectPath)){
+				if (val.toLowerCase().startsWith(projectPath)){
 					val = val.substring(projectPath.length());
 					if (val.startsWith(File.separator)){
 						val = val.substring(File.separator.length());
@@ -101,7 +102,7 @@ public class BuildPathPropertyPage extends PropertyPage {
 
 				String val = super.getNewInputObject();
 
-				if (val.startsWith(projectPath)){
+				if (val.toLowerCase().startsWith(projectPath)){
 					val = val.substring(projectPath.length());
 					if (val.startsWith(File.separator)){
 						val = val.substring(File.separator.length());
@@ -152,7 +153,5 @@ public class BuildPathPropertyPage extends PropertyPage {
 		doStore();
 		return super.performOk();
 	}
-
-
 
 }

@@ -21,6 +21,7 @@
  */ 
 package org.lyllo.kickassplugin.ui;
 
+import java.io.IOException;
 import java.net.URI;
 
 import org.eclipse.core.resources.IFolder;
@@ -30,6 +31,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -37,9 +39,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.lyllo.kickassplugin.Activator;
 import org.lyllo.kickassplugin.Constants;
 import org.lyllo.kickassplugin.Messages;
+import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 
 /**
@@ -106,9 +110,18 @@ public class WizardNewProject extends Wizard implements INewWizard {
 
 			project.setDescription(description, null);
 		
-			createOrRefreshFolder(project, "src");
+			createOrRefreshFolder(project, Constants.DEFAULT_SRC_DIRECTORY);
 			createOrRefreshFolder(project, Constants.DEFAULT_BUILD_DIRECTORY);
-
+			
+			ScopedPreferenceStore store = ProjectPrefenceHelper.getStore(project);
+			store.setValue(Constants.PROJECT_PREFS_BUILD_DIRECTORY_KEY, Constants.DEFAULT_BUILD_DIRECTORY);
+			store.setValue(Constants.PROJECT_PREFS_SRC_DIRECTORY_KEY, Constants.DEFAULT_SRC_DIRECTORY);
+			try {
+				store.save();
+			} catch (IOException e) {
+				//nvm
+			}
+			
 		} catch (CoreException e) {
 			Activator.getDefault().getLog().log(e.getStatus());
 		}
