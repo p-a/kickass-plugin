@@ -146,37 +146,42 @@ public class ASMCompletionProcessor implements IContentAssistProcessor {
 		int offset = region.getOffset();
 		String smprefix = prefixType.prefix.toLowerCase();
 
+		ASMContentOutlinePage outline = editor != null ? editor.getOutline() : null;
 		/* Add things from outline, which is constantly updated */
-		if (prefixType.type != PrefixType.KickAssKeyword){
+		if (prefixType.type != PrefixType.KickAssKeyword && outline != null){
 			addToProposalList(region, proposalList, offset,
-					smprefix, editor.getOutline().getLabels(),null,labelImage);
+					smprefix, outline.getLabels(),null,labelImage);
 		}
 
 		if (prefixType.type == PrefixType.Unknown) {
-			List<String> macros = new ArrayList<String>();
-			{
-				List<String> tempMacros = editor.getOutline().getMacros();
+			if (outline != null){
+				List<String> macros = new ArrayList<String>();
+				List<String> tempMacros = outline.getMacros();
 				for (String m: tempMacros)
 					macros.add(":"+m);
-			}
 
-			addToProposalList(region, proposalList, offset,
+				addToProposalList(region, proposalList, offset,
 					smprefix, macros ,null,macroImage);
+			}
 
 			addToProposalList(region, proposalList, offset,
 					smprefix, asminstructions
 					,null,defaultImage);
 
-			addToProposalList(region, proposalList, offset,
-					smprefix, editor.getOutline().getConsts() ,null,defaultImage);
-
+			if (outline != null){
+				addToProposalList(region, proposalList, offset,
+					smprefix, outline.getConsts() ,null,defaultImage);
+			}
+			
 			addToProposalList(region, proposalList, offset,
 					smprefix, ASMInstructionSet.getConstants().keySet()
 					,null,defaultImage);
 
-			addToProposalList(region, proposalList, offset,
-					smprefix, editor.getOutline().getFunctions() ,null,procedureImage);
-
+			if (outline != null){
+				addToProposalList(region, proposalList, offset,
+					smprefix, outline.getFunctions() ,null,procedureImage);
+			}
+			
 			addToProposalList(region, proposalList, offset,
 					smprefix, ASMInstructionSet.getFunctions().keySet()
 					,null,defaultImage);
