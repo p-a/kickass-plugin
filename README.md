@@ -23,6 +23,7 @@ Eclipse plugin for convenient Kick Assembling binaries for the Commodore 64
 
 ## Features
 * Syntax-highlighting of 6502-opcodes and KickAssembler keywords and functions
+* Auto-completion of labels, functions, macros, constants etc
 * Outline support. The outline shows segments and labels for quick access.
 * Automatic building of source-files
 * Launch support in VICE. Run/Debug your .prg in VICE with labels and breakpoints.
