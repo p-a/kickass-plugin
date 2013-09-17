@@ -58,8 +58,8 @@ Include files are to be named with the extension `.inc` if you want them to be d
 If an include filed is modified, a full build is triggered.
 If an ordinary source file is modified, only this file is compiled. However, this usually means a full compile anyway.
 
-### Run cool demo
-In the resulting build-dir you will find your compiled file. Right-click and choose 'Run prg in VICE'. This will launch X64 with the arguments specified in the preferences. 
+### Run or debug cool demo
+CTRL-F11 (CMD-F11) runs the compiled binary in VICE. Shift-CTRL-F11 starts VICE with breakpoints attached (debug-mode)
 
 ### Debugging with breakpoints
 Labels named `breakpoint` or `breakpoint[1..9]` will trigger a break in VICE if launched as Debug.
