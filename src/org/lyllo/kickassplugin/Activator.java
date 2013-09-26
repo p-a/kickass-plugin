@@ -72,6 +72,9 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 	 */
 	private static OutputConsole console = new OutputConsole();
 
+	//Hack to init Constants class.
+	private static Constants constants = new Constants();
+	
 	private static AutocompletionCollector autocompletionCollector = new AutocompletionCollector();
 
 	/**

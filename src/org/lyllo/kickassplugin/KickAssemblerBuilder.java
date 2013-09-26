@@ -69,7 +69,8 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		return srcFolders;
 	}
 
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+	@Override
+	protected IProject[] build(int kind, Map<String,String> args, IProgressMonitor monitor) throws CoreException {
 
 		this.monitor = monitor;
 	
@@ -94,19 +95,22 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 	private void getAllIncluders(IFile file, Set<String> visited, Map<String,IFile> srcs) {
 
+		if (file == null)
+			return;
+		
 		if (visited.contains(file.getRawLocation().toOSString()) ||
-				(file.getParent() != null && visited.contains(file.getParent().getRawLocation().toOSString())))
+				(file.getParent() != null && file.getParent().getRawLocation() != null && visited.contains(file.getParent().getRawLocation().toOSString())))
 			return;
 
 		try {
-			monitor.subTask("Searching for resources with " + file.getName() + " as dependency");
 			IContainer container = file.getParent();
+			monitor.subTask("Searching for resources with " + file.getName() + " as dependency");
 			String filename = file.getName();
-
 			while (!monitor.isCanceled() && container!= null && container.getType() != IResource.ROOT){
 				SrcCollectingVisitor srcCollectingVisitor = new SrcCollectingVisitor(filename,visited,srcs);
-				for(IResource sibling: container.members()){
-					sibling.accept(srcCollectingVisitor,IResource.DEPTH_ZERO,IResource.NONE);
+				IResource[] members = container.members();
+				for(int i = 0; i < members.length && !monitor.isCanceled(); i++){
+					members[i].accept(srcCollectingVisitor,IResource.DEPTH_ZERO,IResource.NONE);
 				}
 				filename = container.getName()+"/"+filename;
 				container = container.getParent();

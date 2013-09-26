@@ -289,6 +289,10 @@ public class Constants {
 	public static final Pattern FILENAMESPACE_PATTERN = Pattern.compile("\\A\\s*.filenamespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 	public static final Pattern NAMESPACE_PATTERN = Pattern.compile("\\A\\s*.namespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 
+	public final static Pattern SPACES_EQUALS_SIGN_SPACES = Pattern.compile("\\s*=\\s*\\S+");
+	public final static Pattern PSEUDOCOMMAND_PATTERN_LINE = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)$", Pattern.CASE_INSENSITIVE);
+	public final static Pattern BEGIN_BLOCK_PATTERN = Pattern.compile("\\{.*$");
+
 	public static final QualifiedName LABELS_SESSION_KEY = new QualifiedName("LABELS", "LABELS");
 	public static final QualifiedName MACROS_SESSION_KEY = new QualifiedName("MACROS", "MACROS");
 	public static final QualifiedName IMPORTS_SESSION_KEY = new QualifiedName("IMPORTS", "IMPORTS");

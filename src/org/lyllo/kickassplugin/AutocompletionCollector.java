@@ -27,7 +27,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 public class AutocompletionCollector implements IResourceChangeListener, IResourceDeltaVisitor, IResourceVisitor{
@@ -58,7 +60,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 		}
 
 		IResource resource = delta.getResource();
-		
+
 		if (delta.getKind() == IResourceDelta.REMOVED){
 			return true;
 		}  
@@ -69,9 +71,9 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 
 	private void scanfile(final IFile file, final String project) throws CoreException {
-		
+
 		WorkspaceJob scanFileJob = 
-				new WorkspaceJob("Scanning file " + file.getName()) {
+				new WorkspaceJob("Autocompletion collector job") {
 
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -86,20 +88,25 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 				List<String> constig = new ArrayList<String>();
 				List<String> macros = new ArrayList<String>();
 				List<String> functions = new ArrayList<String>();
-				
-				Set<String> imports = new HashSet<String>();
-				
-				try {
-					reader = new BufferedReader(new InputStreamReader(file.getContents(true)),32768);
-					String line = null;
-					while ( (line = reader.readLine()) != null){
 
-						String lowerLine = line.toLowerCase();
+				Set<String> imports = new HashSet<String>();
+
+				try {
+					reader = new BufferedReader(new InputStreamReader(file.getContents(true)),8192);
+					String line = null;
+					monitor.beginTask("Scanning file: " + file.getName(), 1);
+					while ((line = reader.readLine()) != null){
 						
+						if(monitor.isCanceled())
+							throw new OperationCanceledException();
+						
+						String lowerLine = line.toLowerCase();
 						if (line.indexOf(":") > -1 || lowerLine.indexOf(".label") > -1){
 							Matcher matcher = Constants.LABEL_PATTERN.matcher(line);
 							if (matcher.matches()){
-								labels.add(matcher.group(1).replaceAll("\\s*=\\s*\\S+", ""));
+								String group = matcher.group(1);
+								group = Constants.SPACES_EQUALS_SIGN_SPACES.matcher(group).replaceAll("");
+								labels.add(group);
 							} else {
 								matcher =  Constants.LABEL_PATTERN_ALT.matcher(line);
 								if (matcher.find()){
@@ -107,25 +114,26 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 								}
 							}
 						}
-						
+
 						if (lowerLine.indexOf(".macro") > -1) {
-							Pattern pattern = Constants.MACRO_PATTERN;
-							Matcher matcher = pattern.matcher(line);
+							Matcher matcher = Constants.MACRO_PATTERN.matcher(line);
 
 							if (matcher.find()) {
 								macros.add(":"+matcher.group(1));
 							}
 						}
-						
+
+						//FIXME, there is already a Pattern for this in Constants.
 						if (lowerLine.indexOf(".pseudocommand") > -1) {
-							Pattern pattern = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)$", Pattern.CASE_INSENSITIVE);
-							Matcher matcher = pattern.matcher(line);
+							Matcher matcher = Constants.PSEUDOCOMMAND_PATTERN_LINE.matcher(line);
 
 							if (matcher.matches()) {
-								macros.add(":"+matcher.group(1).replaceAll("\\{.*$", "").trim());
+								String group = matcher.group(1);
+								group = Constants.BEGIN_BLOCK_PATTERN.matcher(group).replaceAll("").trim();
+								macros.add(":"+group);
 							}
 						}
-						
+
 						if (lowerLine.indexOf(".var") > -1 || lowerLine.indexOf(".const") > -1) {
 							Pattern pattern = Constants.CONSTVAR_PATTERN;
 							Matcher matcher = pattern.matcher(line);
@@ -134,7 +142,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 								constig.add(matcher.group(2));
 							}
 						}
-						
+
 						if (lowerLine.indexOf(".function") > -1) {
 							Pattern pattern = Constants.FUNCTION_PATTERN;
 							Matcher matcher = pattern.matcher(line);
@@ -144,18 +152,18 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 							}
 						}
 
-						
+
 						if (lowerLine.indexOf(".import") > -1) {
 							Pattern pattern = Constants.IMPORT_SOURCE_PATTERN;
 							Matcher matcher = pattern.matcher(line);
-							
+
 							if (matcher.matches()) {
 								List<String> split = new ArrayList<String>();
 								split.addAll(Arrays.asList(ProjectPrefenceHelper.getSourceDirs(file.getProject())));
 								if (split.isEmpty()){
 									split.add(Constants.DEFAULT_SRC_DIRECTORY);
 								}
-								
+
 								split.addAll(Arrays.asList(ProjectPrefenceHelper.getLibDirs(file.getProject())));
 								split.add(file.getParent().getProjectRelativePath().toString());
 								for (int i = 0; i < split.size(); i++ ){
@@ -167,12 +175,28 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 											imports.add(importPath.toString());
 										} 
 									}
-								
+
 								}
 							}
 						}
 
 					}
+
+					Collections.sort(labels);
+					file.setSessionProperty(Constants.LABELS_SESSION_KEY, labels);
+
+					Collections.sort(macros);
+					file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
+
+					Collections.sort(constig);
+					file.setSessionProperty(Constants.CONST_SESSION_KEY, constig);
+
+					Collections.sort(functions);
+					file.setSessionProperty(Constants.FUNCTIONS_SESSION_KEY, functions);
+
+					file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
+					monitor.worked(1);
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
@@ -182,24 +206,15 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 						} catch (IOException e) {
 						}
 					}
+					monitor.done();
 				}
-				Collections.sort(labels);
-				file.setSessionProperty(Constants.LABELS_SESSION_KEY, labels);
 
-				Collections.sort(macros);
-				file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
-				
-				Collections.sort(constig);
-				file.setSessionProperty(Constants.CONST_SESSION_KEY, constig);
-				
-				Collections.sort(functions);
-				file.setSessionProperty(Constants.FUNCTIONS_SESSION_KEY, functions);
-				
-				file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
-				
 				return Status.OK_STATUS;
 			}
 		};
+
+		//scanFileJob.setRule(file.getProject());
+		scanFileJob.setPriority(Job.SHORT);
 
 		scanFileJob.schedule();
 	}
@@ -221,7 +236,11 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 		if (resource.getProject() == null){
 			return true;
 		}
-		
+
+		if (resource.isVirtual()){
+			return true;
+		}
+
 		if (!resource.getProject().isAccessible() || !resource.getProject().hasNature(Constants.NATURE_ID)){
 			return false;
 		}
@@ -232,7 +251,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 			return true;
 
 		IFile file = (IFile) resource;
-		
+
 		String ext = file.getFileExtension();
 		if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches())
 			scanfile(file, project);
