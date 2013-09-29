@@ -52,7 +52,6 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 		}
 	}
 
-
 	public boolean visit(IResourceDelta delta) throws CoreException {
 
 		if (delta.getResource() == null || delta.getResource().getProject() == null){
@@ -73,7 +72,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 	private void scanfile(final IFile file, final String project) throws CoreException {
 
 		WorkspaceJob scanFileJob = 
-				new WorkspaceJob("Autocompletion collector job") {
+				new WorkspaceJob("Autocompletion collector job: " + file.getName()) {
 
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -96,10 +95,10 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 					String line = null;
 					monitor.beginTask("Scanning file: " + file.getName(), 1);
 					while ((line = reader.readLine()) != null){
-						
+
 						if(monitor.isCanceled())
 							throw new OperationCanceledException();
-						
+
 						String lowerLine = line.toLowerCase();
 						if (line.indexOf(":") > -1 || lowerLine.indexOf(".label") > -1){
 							Matcher matcher = Constants.LABEL_PATTERN.matcher(line);
@@ -183,20 +182,20 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 					}
 
 					Collections.sort(labels);
-					file.setSessionProperty(Constants.LABELS_SESSION_KEY, labels);
-
 					Collections.sort(macros);
-					file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
-
 					Collections.sort(constig);
-					file.setSessionProperty(Constants.CONST_SESSION_KEY, constig);
-
 					Collections.sort(functions);
-					file.setSessionProperty(Constants.FUNCTIONS_SESSION_KEY, functions);
 
-					file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
+					synchronized (file) {
+						file.setSessionProperty(Constants.LABELS_SESSION_KEY, labels);
+						file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
+						file.setSessionProperty(Constants.CONST_SESSION_KEY, constig);
+						file.setSessionProperty(Constants.FUNCTIONS_SESSION_KEY, functions);
+						file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
+					}
+
 					monitor.worked(1);
-					
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
@@ -233,30 +232,33 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 	public boolean visit(IResource resource) throws CoreException {
 
-		if (resource.getProject() == null){
-			return true;
-		}
+		if (resource.getProject() == null 
+				|| resource.isVirtual()
+				|| !resource.getProject().isAccessible() 
+				|| !resource.getProject().hasNature(Constants.NATURE_ID)){
 
-		if (resource.isVirtual()){
-			return true;
-		}
-
-		if (!resource.getProject().isAccessible() || !resource.getProject().hasNature(Constants.NATURE_ID)){
 			return false;
 		}
 
-		String project = resource.getProject().getName();
-
-		if (resource.getType() != IResource.FILE)
+		if (resource.getType() == IResource.PROJECT){
 			return true;
+		}
 
-		IFile file = (IFile) resource;
+		if (resource.getType() == IResource.FOLDER){
+			// on project's build path?
+			return true;
+		}
 
-		String ext = file.getFileExtension();
-		if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches())
-			scanfile(file, project);
+		if (resource.getType() == IResource.FILE){
+			IFile file = (IFile) resource;
 
-		return true;
+			String project = resource.getProject().getName();
+			String ext = file.getFileExtension();
+			if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches())
+				scanfile(file, project);
+		}
+
+		return resource.getType() == IResource.ROOT;
 	}
 
 }
