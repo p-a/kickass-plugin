@@ -57,6 +57,8 @@ import org.osgi.framework.BundleListener;
  */
 public class Activator extends AbstractUIPlugin implements BundleListener {
 
+	private static Object init = null;
+
 	/**
 	 * The shared instance.
 	 */
@@ -74,7 +76,7 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 
 	//Hack to init Constants class.
 	private static Constants constants = new Constants();
-	
+
 	private static AutocompletionCollector autocompletionCollector = new AutocompletionCollector();
 
 	/**
@@ -88,7 +90,7 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 	public AutocompletionCollector getAutoCompletionCollector(){
 		return autocompletionCollector;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -97,31 +99,42 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 		plugin = this; 
 
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(autocompletionCollector);
-		
+
 		context.addBundleListener(this);
 
-		 ISaveParticipant saveParticipant = new KickassSaveParticipant();
-		 ISavedState lastState =
-		      ResourcesPlugin.getWorkspace().addSaveParticipant(Constants.PLUGIN_ID, saveParticipant);
-		   if (lastState != null) {
-		      lastState.processResourceChangeEvents(autocompletionCollector);
-		   }		
-		
-	}
-	
-	public void bundleChanged(BundleEvent arg0) {
-		if (arg0.getType() == BundleEvent.STARTED){
-			Job job = new Job("Autocollector init") {
-			     protected IStatus run(IProgressMonitor monitor) {
-			    	 autocompletionCollector.init();  
-			           return Status.OK_STATUS;
-			        }
+		ISaveParticipant saveParticipant = new KickassSaveParticipant();
+		ISavedState lastState =
+				ResourcesPlugin.getWorkspace().addSaveParticipant(Constants.PLUGIN_ID, saveParticipant);
+		if (lastState != null) {
+			lastState.processResourceChangeEvents(autocompletionCollector);
+		}		
 
-			    };
-			  job.setPriority(Job.LONG);
-			  job.schedule(); 		
+	}
+
+	public void bundleChanged(BundleEvent arg0) {
+
+		if (arg0.getType() == BundleEvent.STARTED ){
+
+			boolean run = false;
+			synchronized (this) {
+				if (init == null){
+					init = "INITIALIZED";
+					run = true;
+				}
+			}
+
+			if (run){
+				Job job = new Job("Autocollector init") {
+					protected IStatus run(IProgressMonitor monitor) {
+						autocompletionCollector.init();  
+						return Status.OK_STATUS;
+					}
+
+				};
+				job.setPriority(Job.LONG);
+				job.schedule(); 		
+			}
 		}
-		
 	}
 
 
@@ -133,7 +146,7 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 		context.removeBundleListener(this);
 		plugin = null; 
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(autocompletionCollector);
-		
+
 	}
 
 	/**
@@ -274,7 +287,7 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 			List<String> splitArray = Arrays.asList(split);
 			dirs.addAll(splitArray);
 		}
-		
+
 		return dirs;
 	}
 }

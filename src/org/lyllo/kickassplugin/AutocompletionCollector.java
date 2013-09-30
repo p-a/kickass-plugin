@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -221,7 +222,6 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 	public void init() {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
 		try {
 			workspace.getRoot().accept(this);
 		} catch (CoreException e) {
@@ -232,6 +232,10 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 	public boolean visit(IResource resource) throws CoreException {
 
+		if (resource.getType() == IResource.ROOT){
+			return true;
+		}
+		
 		if (resource.getProject() == null 
 				|| resource.isVirtual()
 				|| !resource.getProject().isAccessible() 
@@ -241,7 +245,9 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 		}
 
 		if (resource.getType() == IResource.PROJECT){
-			return true;
+			IProject project = (IProject) resource;
+			
+			return project.isOpen();
 		}
 
 		if (resource.getType() == IResource.FOLDER){
