@@ -299,6 +299,8 @@ public class Constants {
 	public static final QualifiedName CONST_SESSION_KEY = new QualifiedName("CONST",  "CONST");
 	public static final QualifiedName FUNCTIONS_SESSION_KEY = new QualifiedName("FUNCTIONS", "FUNCTIONS");
 
+	public static final QualifiedName NO_KICKASS_SCAN = new QualifiedName("NO_KICKASS_SCAN", "NO_KICKASS_SCAN");
+	
 	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*\\s?$", Pattern.CASE_INSENSITIVE);
 
 	public static final Pattern CONSTVAR_PATTERN = Pattern.compile("^\\s*\\.(const|var)\\s+(\\w+)(\\s*=\\s*\\S+)\\s*.*\\s?$",Pattern.CASE_INSENSITIVE);

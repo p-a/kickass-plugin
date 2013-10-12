@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -29,6 +30,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
@@ -235,7 +237,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 		if (resource.getType() == IResource.ROOT){
 			return true;
 		}
-		
+
 		if (resource.getProject() == null 
 				|| resource.isVirtual()
 				|| !resource.getProject().isAccessible() 
@@ -246,13 +248,13 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 		if (resource.getType() == IResource.PROJECT){
 			IProject project = (IProject) resource;
-			
 			return project.isOpen();
 		}
 
 		if (resource.getType() == IResource.FOLDER){
-			// on project's build path?
-			return true;
+
+			IFolder folder = (IFolder) resource;
+			return folder.findMember(".no_kickass_scan") == null;
 		}
 
 		if (resource.getType() == IResource.FILE){
@@ -260,8 +262,9 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 			String project = resource.getProject().getName();
 			String ext = file.getFileExtension();
-			if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches())
+			if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
 				scanfile(file, project);
+			}
 		}
 
 		return resource.getType() == IResource.ROOT;

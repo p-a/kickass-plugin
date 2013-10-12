@@ -75,6 +75,7 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 	private static OutputConsole console = new OutputConsole();
 
 	//Hack to init Constants class.
+	@SuppressWarnings("unused")
 	private static Constants constants = new Constants();
 
 	private static AutocompletionCollector autocompletionCollector = new AutocompletionCollector();
@@ -107,8 +108,8 @@ public class Activator extends AbstractUIPlugin implements BundleListener {
 				ResourcesPlugin.getWorkspace().addSaveParticipant(Constants.PLUGIN_ID, saveParticipant);
 		if (lastState != null) {
 			lastState.processResourceChangeEvents(autocompletionCollector);
-		}		
-
+		}	
+		
 	}
 
 	public void bundleChanged(BundleEvent arg0) {

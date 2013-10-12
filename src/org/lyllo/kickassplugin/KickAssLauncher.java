@@ -1,10 +1,10 @@
 /*
  Kick Assembler plugin - An Eclipse plugin for convenient Kick Assembling
  Copyright (c) 2012 - P-a Backstrom <pa.backstrom@gmail.com>
- 
+
  Based on ASMPlugin - http://sourceforge.net/projects/asmplugin/
  Copyright (c) 2006 - Andy Reek, D. Mitte
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -18,12 +18,17 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/ 
+ */ 
 package org.lyllo.kickassplugin;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -60,12 +65,19 @@ public class KickAssLauncher implements IStreamListener {
 					jar = new JarFile(classPathTemp[0]);
 					String mainClass = jar.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
 					jar.close();
-					
+
 					List<String> classPathList = new ArrayList<String>();
 					classPathList.add(classPathTemp[0]);
-					classPathList.addAll(ProjectPrefenceHelper.getAbsoluteLibDirs(project));
-					classPathList.addAll(Activator.getGlobalLibdirs());
 					
+					List<String> absoluteLibDirs = ProjectPrefenceHelper.getAbsoluteLibDirs(project);
+					classPathList.addAll(absoluteLibDirs);
+					classPathList.addAll(getJarsFromPaths(absoluteLibDirs));
+
+					List<String> globalLibdirs = Activator.getGlobalLibdirs();
+					
+					classPathList.addAll(globalLibdirs);
+					classPathList.addAll(getJarsFromPaths(globalLibdirs));
+
 					VMRunnerConfiguration vmConfig = 
 							new VMRunnerConfiguration(mainClass, classPathList.toArray(new String[]{}));
 					ILaunch launch = new Launch(null, ILaunchManager.RUN_MODE, null);
@@ -86,7 +98,7 @@ public class KickAssLauncher implements IStreamListener {
 						} catch (InterruptedException e) {
 						}
 					}
-					
+
 				} catch (IOException e) {
 					throw new CoreException(new Status(Status.ERROR, Constants.PLUGIN_ID,
 							"Could not compile. Please make sure that you have set the path to Kickass.jar in the Preferences",e));
@@ -100,7 +112,7 @@ public class KickAssLauncher implements IStreamListener {
 					if (iProcess != null && !iProcess.isTerminated()){
 						iProcess.terminate();
 					}
-					
+
 					Activator.getConsole().bringConsoleToFront();
 					Activator.getConsole().println("Done compiling");
 				}
@@ -111,6 +123,27 @@ public class KickAssLauncher implements IStreamListener {
 
 		}
 
+	}
+
+	private Collection<String> getJarsFromPaths(List<String> paths){
+
+		Set<String> jars = new HashSet<String>();
+		for (String s: paths){
+			File file =  new File(s);
+			if (file.isDirectory()){
+					File[] list = file.listFiles(new FilenameFilter() {
+
+						public boolean accept(File dir, String name) {
+							return name.toLowerCase().endsWith(".jar");
+						}
+					});
+					for (File f: list){
+						jars.add(f.getAbsolutePath());
+					}
+			}
+		}
+		
+		return jars;
 	}
 
 	public void streamAppended(final String arg0, IStreamMonitor arg1) {
