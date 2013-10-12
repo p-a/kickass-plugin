@@ -23,6 +23,7 @@ Eclipse plugin for convenient Kick Assembling binaries for the Commodore 64
 
 ## Features
 * Syntax-highlighting of 6502-opcodes and KickAssembler keywords and functions
+* Auto-completion of labels, functions, macros, constants etc
 * Outline support. The outline shows segments and labels for quick access.
 * Automatic building of source-files
 * Launch support in VICE. Run/Debug your .prg in VICE with labels and breakpoints.
@@ -57,8 +58,8 @@ Include files are to be named with the extension `.inc` if you want them to be d
 If an include filed is modified, a full build is triggered.
 If an ordinary source file is modified, only this file is compiled. However, this usually means a full compile anyway.
 
-### Run cool demo
-In the resulting build-dir you will find your compiled file. Right-click and choose 'Run prg in VICE'. This will launch X64 with the arguments specified in the preferences. 
+### Run or debug cool demo
+CTRL-F11 (CMD-F11) runs the compiled binary in VICE. Shift-CTRL-F11 starts VICE with breakpoints attached (debug-mode)
 
 ### Debugging with breakpoints
 Labels named `breakpoint` or `breakpoint[1..9]` will trigger a break in VICE if launched as Debug.
