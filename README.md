@@ -51,6 +51,8 @@ Project-specific library directories are configured at the project level, easies
 the project-folder, and choose `Build Path->Configure Build Path`.
 Here, you can configure additional source and library directories.
 Only the directories specified as source will be subject for code-completion.
+All libdirs are also included on Kickass's classpath. So if you have a Kickassplugin, class or jar, make sure its
+containing directory is specified as a libdir.
 
 ### Write code
 Create `.asm` or `.s` files.
