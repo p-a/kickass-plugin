@@ -34,6 +34,7 @@ import java.util.jar.JarFile;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchManager;
@@ -51,7 +52,7 @@ import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 public class KickAssLauncher implements IStreamListener {
 
-	public void launch(String[] args, String filedir, IProject project) throws CoreException {
+	public void launch(String[] args, String filedir, IProject project, IProgressMonitor monitor) throws CoreException {
 		IVMInstall vmInstall = JavaRuntime.getDefaultVMInstall();
 		if (vmInstall != null) {
 			IVMRunner vmRunner = vmInstall.getVMRunner(ILaunchManager.RUN_MODE);
@@ -92,7 +93,7 @@ public class KickAssLauncher implements IStreamListener {
 					IStreamMonitor errorStreamMonitor = iProcess.getStreamsProxy().getErrorStreamMonitor();
 					errorStreamMonitor.addListener(this);
 
-					while(!iProcess.isTerminated()){
+					while(!iProcess.isTerminated() && monitor != null && !monitor.isCanceled()){
 						try {
 							Thread.sleep(500);
 						} catch (InterruptedException e) {

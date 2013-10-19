@@ -146,6 +146,10 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 			visited.add(tmp);
 
 			if (arg0.getType() == IResource.FOLDER){
+				
+				if (((IFolder)arg0).findMember(".no_kickass_scan") != null){
+					return false;
+				}
 				if (matchingSourceFolder(arg0.getProjectRelativePath())){
 					SrcCollectingVisitor srcCollectingVisitor = new SrcCollectingVisitor("../"+filename, visited,srcs);
 					for (IResource child: ((IFolder)arg0).members()){
@@ -157,6 +161,9 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 
 			if (arg0.getType() == IResource.FILE){
 				
+				if (arg0.getParent().findMember(".no_kickass_scan") != null){
+					return false;
+				}
 				String ext = arg0.getFileExtension();
 				if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
 					if (containsFilename((IFile) arg0, filename)){
@@ -222,7 +229,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 		IProject project = getProject();
 		monitor.beginTask(Messages.BUILDING_TITLE, 100);
 		monitor.subTask(Messages.BUILDING_TEXT_COMPILE);
-		project.accept(new MyFullBuildVisitor());
+		project.accept(new MyFullBuildVisitor(monitor));
 		monitor.done();
 		project.refreshLocal(IResource.DEPTH_INFINITE, null);
 	}
@@ -279,7 +286,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 			throw new CoreException(new Status(Status.ERROR, Constants.PLUGIN_ID, "Could not compile. Please make sure that you have set the path to Kickass.jar in the Preferences"));
 		}
 
-		new KickAssLauncher().launch(cmdLine, filedir, file.getProject());
+		new KickAssLauncher().launch(cmdLine, filedir, file.getProject(), monitor);
 		try {
 
 			destFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
@@ -396,20 +403,40 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 	 * @since 25.11.2005
 	 */
 	private class MyFullBuildVisitor implements IResourceVisitor {
+	
+		private IProgressMonitor monitor;
+
+		public MyFullBuildVisitor(IProgressMonitor monitor) {
+			this.monitor = monitor;
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
 		public boolean visit(IResource resource) throws CoreException {
 			int resourceType = resource.getType();
 
+			if (monitor != null && monitor.isCanceled())
+				return false;
+			
 			if (resourceType == IResource.PROJECT) {
-				return getProject().getName().equals(resource.getName());
+				return resource.getProject().hasNature(Constants.NATURE_ID);
 			} else if (resourceType == IResource.FOLDER) {
-				return matchingSourceFolder(resource.getProjectRelativePath());
+				return ((IFolder)resource).findMember(".no_kickass_scan") == null &&
+						matchingSourceFolder(resource.getProjectRelativePath());
 			} else if (resourceType == IResource.FILE) {
+				
+				IFile file = (IFile) resource;
+				boolean kickassScan = true;
+				IResource res = file.getParent();
+				while (kickassScan && res != null && res.getType() == IResource.FOLDER){
+					kickassScan &= ((IFolder)res).findMember(".no_kickass_scan") == null;
+					res = res.getParent();
+				}
+				
 				String extension = resource.getFileExtension();
-				if (extension != null && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()){
-					compileFile((IFile) resource);
+				if (kickassScan && extension != null && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()){
+					compileFile(file);
 				}
 			}
 
@@ -450,11 +477,19 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 				int resourceType = resource.getType();
 
 				if (resourceType == IResource.FILE) {
+					
+					boolean kickassScan = true;
+					IResource res = resource.getParent();
+					while (kickassScan && res != null && res.getType() == IResource.FOLDER){
+						kickassScan &= ((IFolder)res).findMember(".no_kickass_scan") == null;
+						res = res.getParent();
+					}
+				
 					String extension = resource.getFileExtension();
-					if ((extension != null) && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()) {
+					if (kickassScan && (extension != null) && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()) {
 						if (!monitor.isCanceled())
 							compileFile((IFile) resource);
-					} else if (extension != null && Constants.EXTENSION_PATTERN_INCLUDES.matcher(extension).matches()){
+					} else if (kickassScan && extension != null && Constants.EXTENSION_PATTERN_INCLUDES.matcher(extension).matches()){
 
 						Map<String,IFile>srcs = new HashMap<String, IFile>();
 						getAllIncluders((IFile)resource, new HashSet<String>(),srcs);
@@ -465,9 +500,10 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
 						}
 					}
 				} else if (resourceType == IResource.PROJECT) {
-					return getProject().getName().equals(resource.getName());
+					return resource.getProject().hasNature(Constants.NATURE_ID);
 				} else if (resourceType == IResource.FOLDER) {
-					return matchingSourceFolder(resource.getProjectRelativePath());
+					return ((IFolder)resource).findMember(".no_kickass_scan") == null &&
+							matchingSourceFolder(resource.getProjectRelativePath());
 				} 
 			}
 

@@ -10,7 +10,9 @@
             extensions="asm, inc, s, sym"
             icon="icons/16/asm.gif"
             id="KickAssPlugin.editor1"
-            name="%editor.name"/>
+            name="%editor.name">
+              <contentTypeBinding contentTypeId="org.lyllo.kickassplugin.asm.contenttypeMod" />
+            </editor>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -268,31 +270,14 @@
       	</page>
    </extension>
    <extension
-         point="org.eclipse.ui.decorators">
-      <decorator
-            adaptable="true"
-            icon="icons/sample_decorator.gif"
-            id="org.lyllo.kickassplugin.decorator"
-            label="Resource Decorator"
-            lightweight="true"
-            class="org.lyllo.kickassplugin.ui.FolderDecorator"
-            location="TOP_RIGHT"
-            state="true">
-         <enablement>
-            <and>
-               <objectClass
-                     name="org.eclipse.core.resources.IResource">
-               </objectClass>
-               <or>
-                  <objectClass
-                        name="org.eclipse.core.resources.IProject">
-                  </objectClass>
-                  <objectClass
-                        name="org.eclipse.core.resources.IFile">
-                  </objectClass>
-               </or>
-            </and>
-         </enablement>
-      </decorator>
+         id="org.lyllo.kickassplugin.asm.contentType"
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            id="org.lyllo.kickassplugin.asm.contenttypeMod"
+            file-extensions="asm,inc,sym,s"
+            base-type="org.eclipse.core.runtime.text"
+            name="KickAssembler File"
+            priority="high">
+      </content-type>
    </extension>
 </plugin>

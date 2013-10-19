@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
@@ -259,10 +258,16 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 		if (resource.getType() == IResource.FILE){
 			IFile file = (IFile) resource;
-
-			String project = resource.getProject().getName();
+			boolean kickassScan = true;
+			IResource res = file.getParent();
+			while (kickassScan && res != null && res.getType() == IResource.FOLDER){
+				kickassScan &= ((IFolder) res).findMember(".no_kickass_scan") == null;
+				res = res.getParent();
+			}
+			
 			String ext = file.getFileExtension();
-			if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
+			if (kickassScan && ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
+				String project = resource.getProject().getName();
 				scanfile(file, project);
 			}
 		}
