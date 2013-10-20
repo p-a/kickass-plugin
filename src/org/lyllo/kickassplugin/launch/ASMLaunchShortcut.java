@@ -142,13 +142,22 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 
 		dest = dest.substring(0,dest.lastIndexOf(File.separatorChar)+1) + destName;
 
+		String wfile = dest;
+		int pos = wfile.lastIndexOf(File.separator);
+
+		if (pos > 0) {
+			wfile = wfile.substring(0, pos);
+		}
+
 		try {
 			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 			ILaunchConfigurationType type = manager.getLaunchConfigurationType(Constants.LAUNCH_CONFIGURATION_TYPE_ID);
 			ILaunchConfiguration[] configs = manager.getLaunchConfigurations(type);
 
 			for (ILaunchConfiguration config : configs) {
-				if (config.getAttribute(Constants.LAUNCH_FILE, "").equalsIgnoreCase(destName)) {
+				if (config.getAttribute(Constants.LAUNCH_FILE, "").equalsIgnoreCase(destName) &&
+					config.getAttribute(Constants.LAUNCH_WORKING_DIRECTORY,"").equalsIgnoreCase(wfile)
+						) {
 					DebugUITools.launch(config, mode);
 					return;
 				}
@@ -158,15 +167,6 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 					null,
 					manager.generateUniqueLaunchConfigurationNameFrom(Messages.EXECUTABLE_NAME));
 			copy.setAttribute(Constants.LAUNCH_FILE, destName);
-
-
-			String wfile = dest;
-			int pos = wfile.lastIndexOf(File.separator);
-
-			if (pos > 0) {
-				wfile = wfile.substring(0, pos);
-			}
-
 			copy.setAttribute(Constants.LAUNCH_WORKING_DIRECTORY, wfile);
 			copy.setAttribute(Constants.LAUNCH_ARGUMENTS, "");
 			ILaunchConfiguration config = copy.doSave();

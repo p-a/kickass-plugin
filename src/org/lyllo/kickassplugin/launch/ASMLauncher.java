@@ -1,10 +1,10 @@
 /*
  Kick Assembler plugin - An Eclipse plugin for convenient Kick Assembling
  Copyright (c) 2012 - P-a Backstrom <pa.backstrom@gmail.com>
- 
+
  Based on ASMPlugin - http://sourceforge.net/projects/asmplugin/
  Copyright (c) 2006 - Andy Reek, D. Mitte
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/ 
+ */ 
 package org.lyllo.kickassplugin.launch;
 
 import java.io.BufferedWriter;
@@ -67,42 +67,48 @@ public class ASMLauncher extends LaunchConfigurationDelegate {
 		}
 
 		String launchWorkingDirectory = configuration.getAttribute(Constants.LAUNCH_WORKING_DIRECTORY, "");
-		if (launchWorkingDirectory == null || launchWorkingDirectory.trim().length() == 0){
+		if (launchWorkingDirectory == null || (launchWorkingDirectory = launchWorkingDirectory.trim()).length() == 0){
 			return;
 		}
 
 		String launchFile = configuration.getAttribute(Constants.LAUNCH_FILE, "");
 
-		if ((launchFile == null) || (launchFile.trim().length() < 1)) {
+		if ((launchFile == null) || ( (launchFile = launchFile.trim()).length() < 1)) {
 			return;
 		}
 
-		String filename;
+		StringBuilder filenameBuilder = new StringBuilder();
+
+		filenameBuilder.append(launchWorkingDirectory);
 		if (launchFile.lastIndexOf(File.separatorChar) > -1){
-			filename = launchWorkingDirectory + launchFile.substring(launchFile.lastIndexOf(File.separatorChar));
+			filenameBuilder.append(launchFile.substring(launchFile.lastIndexOf(File.separatorChar)));
 		} else if (launchFile.lastIndexOf('/') > -1) {
-			filename = launchWorkingDirectory + launchFile.substring(launchFile.lastIndexOf('/'));
+			filenameBuilder.append(launchFile.substring(launchFile.lastIndexOf('/')));
 		} else {
-			filename = launchWorkingDirectory + File.separator + launchFile;
+			filenameBuilder.append(File.separator).append(launchFile);
 		}
 
 		String sep = File.separator;
 		if (sep.charAt(0) != '/') {
 			sep = "\\" + sep; //This is weird
 		}
-		
-		filename = filename.replaceAll("/", sep);
 
-		while (filename.length() > 0 && filename.charAt(0) == '\\'){
-			filename = filename.substring(1);
+		String filename = filenameBuilder.toString().replaceAll("/", sep);
+
+		{
+			int i = 0;
+			while (filename.length() > i && filename.charAt(i) == '\\'){
+				i++;
+			}
+			filename = filename.substring(i);
 		}
 		
 		List<String> cmds = new ArrayList<String>();
 		cmds.add(debugger.trim());
 
 		for (String param: params.trim().split("\\n")){
-			if (!"".equals(param.trim())){
-				cmds.add(param.trim());
+			if (!"".equals((param=param.trim()))){
+				cmds.add(param);
 			}
 		}
 
@@ -143,6 +149,7 @@ public class ASMLauncher extends LaunchConfigurationDelegate {
 			} finally {
 				if (writer != null){
 					try {
+						writer.flush();
 						writer.close();
 					} catch (IOException e) {
 					}
