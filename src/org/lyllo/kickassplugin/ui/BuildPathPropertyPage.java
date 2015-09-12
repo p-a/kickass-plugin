@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.PathEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -15,6 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.lyllo.kickassplugin.Constants;
+import org.lyllo.kickassplugin.Messages;
 import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 public class BuildPathPropertyPage extends PropertyPage {
@@ -22,7 +26,9 @@ public class BuildPathPropertyPage extends PropertyPage {
 	private ScopedPreferenceStore store;
 	private PathEditor srcPath;
 	private PathEditor libPath;
+	private FileFieldEditor compiler;
 	private DirectoryFieldEditor buildPath;
+    private StringFieldEditor kickasscfg;
 
 	@Override
 	protected Control createContents(Composite parent) {
@@ -125,7 +131,35 @@ public class BuildPathPropertyPage extends PropertyPage {
 		
 		libPath.setPreferenceStore(store);
 		libPath.load();
+		
+		comp = new Composite(parent, SWT.NONE);
+        layout = new GridLayout(2, false);
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        comp.setLayout(layout);
+        comp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        
 
+		 // Field for Compiler-Executable
+	    compiler = new FileFieldEditor(Constants.PROJECT_PREFS_COMPILER_KEY, Messages.COMPILER_NAME + ": ",
+	                                                   true, comp);
+	    compiler.setEmptyStringAllowed(true);
+	    compiler.setFileExtensions(new String[]{"*.jar"});
+	    compiler.setPreferenceStore(store);
+	    compiler.load();
+	    
+	    comp = new Composite(parent, SWT.NONE);
+        layout = new GridLayout(2, false);
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        comp.setLayout(layout);
+        comp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        
+	    
+	    kickasscfg = new StringFieldEditor(Constants.PROJECT_PREFS_LOCAL_CONF_KEY, Messages.COMPILER_LOCAL_CFG, comp);
+	    kickasscfg.setEmptyStringAllowed(true);
+	    kickasscfg.setPreferenceStore(store);
+	    kickasscfg.load();
 
 		return parent;
 	}
@@ -141,6 +175,8 @@ public class BuildPathPropertyPage extends PropertyPage {
 		srcPath.store();
 		libPath.store();
 		buildPath.store();
+		compiler.store();
+		kickasscfg.store();
 		try {
 			store.save();
 		} catch (IOException e) {

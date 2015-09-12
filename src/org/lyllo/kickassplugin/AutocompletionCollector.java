@@ -36,7 +36,7 @@ import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 public class AutocompletionCollector implements IResourceChangeListener, IResourceDeltaVisitor, IResourceVisitor{
 
-	public void resourceChanged(IResourceChangeEvent event) {
+    public void resourceChanged(IResourceChangeEvent event) {
 
 		switch (event.getType()){
 		case IResourceChangeEvent.PRE_DELETE:
@@ -64,7 +64,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 		if (delta.getKind() == IResourceDelta.REMOVED){
 			return true;
-		}  
+		}
 
 		return visit(resource);
 
@@ -73,7 +73,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 	private void scanfile(final IFile file, final String project) throws CoreException {
 
-		WorkspaceJob scanFileJob = 
+		WorkspaceJob scanFileJob =
 				new WorkspaceJob("Autocompletion collector job: " + file.getName()) {
 
 			@Override
@@ -123,6 +123,15 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 								macros.add(":"+matcher.group(1));
 							}
 						}
+
+//						if (lowerLine.indexOf(".plugin") > -1){
+//						    Matcher matcher = Constants.PLUGIN_PATTERN.matcher(line);
+//
+//						    if (matcher.matches()){
+//						        String classname = matcher.group(1);
+//
+//						    }
+//						}
 
 						//FIXME, there is already a Pattern for this in Constants.
 						if (lowerLine.indexOf(".pseudocommand") > -1) {
@@ -174,7 +183,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 										IFile importedFile = file.getProject().getFile(importPath);
 										if (importedFile.exists()){
 											imports.add(importPath.toString());
-										} 
+										}
 									}
 
 								}
@@ -237,9 +246,9 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 			return true;
 		}
 
-		if (resource.getProject() == null 
+		if (resource.getProject() == null
 				|| resource.isVirtual()
-				|| !resource.getProject().isAccessible() 
+				|| !resource.getProject().isAccessible()
 				|| !resource.getProject().hasNature(Constants.NATURE_ID)){
 
 			return false;
@@ -264,7 +273,7 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 				kickassScan &= ((IFolder) res).findMember(".no_kickass_scan") == null;
 				res = res.getParent();
 			}
-			
+
 			String ext = file.getFileExtension();
 			if (kickassScan && ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
 				String project = resource.getProject().getName();
@@ -274,5 +283,6 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
 		return resource.getType() == IResource.ROOT;
 	}
+
 
 }

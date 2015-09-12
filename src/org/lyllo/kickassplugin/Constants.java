@@ -18,7 +18,7 @@
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */ 
+ */
 package org.lyllo.kickassplugin;
 
 import java.util.regex.Pattern;
@@ -28,7 +28,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * Class which holds several constants.
- * 
+ *
  * @author Andy Reek
  * @since 06.10.2005
  */
@@ -96,7 +96,7 @@ public class Constants {
 	public static final String PREFERENCES_COMPILER_NAME = "preferences.compiler.name"; //$NON-NLS-1$
 
 	/**
-	 * Compiler paramameter Property.
+	 * Compiler parameter Property.
 	 */
 	public static final String PREFERENCES_COMPILER_PARAMS = "preferences.compiler.params"; //$NON-NLS-1$
 
@@ -108,6 +108,8 @@ public class Constants {
 
 	public static final String PREFERENCES_COMPILER_AFO = "preferences.compiler.afo";
 
+    public static final String PREFERENCES_LOCAL_CONFIG = "preferences.compiler.cfgfile";
+
 
 	/**
 	 * Linker name Property.
@@ -115,7 +117,7 @@ public class Constants {
 	public static final String PREFERENCES_LINKER_NAME = "preferences.linker.name"; //$NON-NLS-1$
 
 	/**
-	 * Linker paramameter Property.
+	 * Linker parameter Property.
 	 */
 	public static final String PREFERENCES_LINKER_PARAMS = "preferences.linker.params"; //$NON-NLS-1$
 
@@ -131,7 +133,7 @@ public class Constants {
 	public static final String PREFERENCES_DEBUGGER_NAME = "preferences.debugger.name"; //$NON-NLS-1$
 
 	/**
-	 * Debugger paramameter Property.
+	 * Debugger parameter Property.
 	 */
 	public static final String PREFERENCES_DEBUGGER_PARAMS = "preferences.debugger.params"; //$NON-NLS-1$
 
@@ -272,6 +274,8 @@ public class Constants {
 	public static final String PROJECT_PREFS_BUILD_DIRECTORY_KEY = "org.lyllo.kickassplugin.project.builddir";
 	public static final String PROJECT_PREFS_SRC_DIRECTORY_KEY = "org.lyllo.kickassplugin.project.srcdir";
 	public static final String PROJECT_PREFS_LIBDIR_DIRECTORY_KEY = "org.lyllo.kickassplugin.project.libdir";
+    public static final String PROJECT_PREFS_COMPILER_KEY = "org.lyllo.kickassplugin.project.compiler";
+    public static final String PROJECT_PREFS_LOCAL_CONF_KEY = "org.lyllo.kickassplugin.project.localconf";
 
 
 	public final static Pattern EXTENSION_PATTERN_ALL = Pattern.compile("(asm|inc|sym|s)",Pattern.CASE_INSENSITIVE);
@@ -280,12 +284,15 @@ public class Constants {
 
 	public final static Pattern LABEL_PATTERN = Pattern.compile("\\A\\s*\\.label\\s+(\\w+\\s*=\\s*\\S+).*$", Pattern.CASE_INSENSITIVE);
 	public final static Pattern LABEL_PATTERN_ALT = Pattern.compile("\\A\\s*(\\w+):.*$", Pattern.CASE_INSENSITIVE);
-	
+
 	public final static Pattern MACRO_PATTERN = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
+
+	public final static Pattern PLUGIN_PATTERN = Pattern.compile("^\\s*\\.plugin\\s*\"(([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*)\".*$");
+
 	public final static Pattern PSEUDOCOMMAND_PATTERN = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)\\{?.*$", Pattern.CASE_INSENSITIVE);
 
 	public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\A\\s*\\.function\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
-	
+
 	public static final Pattern FILENAMESPACE_PATTERN = Pattern.compile("\\A\\s*.filenamespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 	public static final Pattern NAMESPACE_PATTERN = Pattern.compile("\\A\\s*.namespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
 
@@ -300,12 +307,13 @@ public class Constants {
 	public static final QualifiedName FUNCTIONS_SESSION_KEY = new QualifiedName("FUNCTIONS", "FUNCTIONS");
 
 	public static final QualifiedName NO_KICKASS_SCAN = new QualifiedName("NO_KICKASS_SCAN", "NO_KICKASS_SCAN");
-	
+
 	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*\\s?$", Pattern.CASE_INSENSITIVE);
 
 	public static final Pattern CONSTVAR_PATTERN = Pattern.compile("^\\s*\\.(const|var)\\s+(\\w+)(\\s*=\\s*\\S+)\\s*.*\\s?$",Pattern.CASE_INSENSITIVE);
 	public static final Pattern EQUALS_PATTERN = Pattern.compile("\\s*=.*");
 
+  
 
 
 }

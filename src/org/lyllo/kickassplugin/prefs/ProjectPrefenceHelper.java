@@ -46,6 +46,9 @@ public class ProjectPrefenceHelper {
 		
 		return libdirsArray;
 	}
-	
-	
+
+    public static String getCompiler(IProject project) {
+        return getStore(project).getString(Constants.PROJECT_PREFS_COMPILER_KEY);
+    }    
+    
 }

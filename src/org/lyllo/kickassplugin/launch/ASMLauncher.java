@@ -142,6 +142,7 @@ public class ASMLauncher extends LaunchConfigurationDelegate {
 				}
 				cmds.add("-moncommands");
 				cmds.add(file.getCanonicalPath());
+		        writer.flush();
 			} catch (IOException e) {
 				Activator.getDefault().getLog().log(
 						new Status(Status.INFO, Constants.PLUGIN_ID, "Error" + e.getMessage()));
@@ -149,7 +150,6 @@ public class ASMLauncher extends LaunchConfigurationDelegate {
 			} finally {
 				if (writer != null){
 					try {
-						writer.flush();
 						writer.close();
 					} catch (IOException e) {
 					}

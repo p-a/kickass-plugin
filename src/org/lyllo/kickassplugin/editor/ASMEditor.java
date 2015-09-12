@@ -91,6 +91,11 @@ public class ASMEditor extends TextEditor {
     setSourceViewerConfiguration(new ASMSourceViewerConfiguration(this));
   }
 
+  @Override
+    protected boolean isTabsToSpacesConversionEnabled() {
+        return true;
+    }
+  
   /**
    * {@inheritDoc}
    */

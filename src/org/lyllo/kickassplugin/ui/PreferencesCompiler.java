@@ -25,6 +25,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.PathEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -77,7 +78,11 @@ public class PreferencesCompiler extends FieldEditorPreferencePage implements IW
     
     BooleanFieldEditor afo = new BooleanFieldEditor(Constants.PREFERENCES_COMPILER_AFO, Messages.COMPILER_AFO, parent);
     addField(afo);
-    
+ 
+    StringFieldEditor kickasscfg = new StringFieldEditor(Constants.PREFERENCES_LOCAL_CONFIG, Messages.COMPILER_LOCAL_CFG, parent);
+    kickasscfg.setEmptyStringAllowed(true);
+    addField(kickasscfg);
+ 
     PathEditor pathEditor = new PathEditor(Constants.PREFERENCES_COMPILER_LIBDIRS, Messages.COMPILER_LIBDIRS,Messages.COMPILER_LIBDIRS_CHOOSETEXT, parent);
     addField(pathEditor);
     
