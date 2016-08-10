@@ -38,251 +38,271 @@ public class AutocompletionCollector implements IResourceChangeListener, IResour
 
     public void resourceChanged(IResourceChangeEvent event) {
 
-		switch (event.getType()){
-		case IResourceChangeEvent.PRE_DELETE:
-			break;
-		case IResourceChangeEvent.POST_CHANGE:
-		case IResourceChangeEvent.POST_BUILD:
-		case IResourceChangeEvent.PRE_REFRESH:
-			try {
-				event.getDelta().accept(this);
-			} catch (CoreException ex){
-				//error
-				ex.printStackTrace();
-			}
-			break;
-		}
-	}
+        switch (event.getType()){
+        case IResourceChangeEvent.PRE_DELETE:
+            break;
+        case IResourceChangeEvent.POST_CHANGE:
+        case IResourceChangeEvent.POST_BUILD:
+        case IResourceChangeEvent.PRE_REFRESH:
+            try {
+                event.getDelta().accept(this);
+            } catch (CoreException ex){
+                //error
+                ex.printStackTrace();
+            }
+            break;
+        }
+    }
 
-	public boolean visit(IResourceDelta delta) throws CoreException {
+    public boolean visit(IResourceDelta delta) throws CoreException {
 
-		if (delta.getResource() == null || delta.getResource().getProject() == null){
-			return true;
-		}
+        if (delta.getResource() == null || delta.getResource().getProject() == null){
+            return true;
+        }
 
-		IResource resource = delta.getResource();
+        IResource resource = delta.getResource();
 
-		if (delta.getKind() == IResourceDelta.REMOVED){
-			return true;
-		}
+        if (delta.getKind() == IResourceDelta.REMOVED){
+            return true;
+        }
 
-		return visit(resource);
+        return visit(resource);
 
-	}
-
-
-	private void scanfile(final IFile file, final String project) throws CoreException {
-
-		WorkspaceJob scanFileJob =
-				new WorkspaceJob("Autocompletion collector job: " + file.getName()) {
-
-			@Override
-			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+    }
 
 
-				if (monitor == null){
-					monitor = new NullProgressMonitor();
-				}
+    private void scanfile(final IFile file, final String project) throws CoreException {
 
-				BufferedReader reader = null;
-				List<String> labels = new ArrayList<String>();
-				List<String> constig = new ArrayList<String>();
-				List<String> macros = new ArrayList<String>();
-				List<String> functions = new ArrayList<String>();
+        WorkspaceJob scanFileJob =
+                new WorkspaceJob("Autocompletion collector job: " + file.getName()) {
 
-				Set<String> imports = new HashSet<String>();
+            private List<String> searchpaths = null;
+            private Set<String> imports = new HashSet<String>();
 
-				try {
-					reader = new BufferedReader(new InputStreamReader(file.getContents(true)),8192);
-					String line = null;
-					monitor.beginTask("Scanning file: " + file.getName(), 1);
-					while ((line = reader.readLine()) != null){
-
-						if(monitor.isCanceled())
-							throw new OperationCanceledException();
-
-						String lowerLine = line.toLowerCase();
-						if (line.indexOf(":") > -1 || lowerLine.indexOf(".label") > -1){
-							Matcher matcher = Constants.LABEL_PATTERN.matcher(line);
-							if (matcher.matches()){
-								String group = matcher.group(1);
-								group = Constants.SPACES_EQUALS_SIGN_SPACES.matcher(group).replaceAll("");
-								labels.add(group);
-							} else {
-								matcher =  Constants.LABEL_PATTERN_ALT.matcher(line);
-								if (matcher.find()){
-									labels.add(matcher.group(1));
-								}
-							}
-						}
-
-						if (lowerLine.indexOf(".macro") > -1) {
-							Matcher matcher = Constants.MACRO_PATTERN.matcher(line);
-
-							if (matcher.find()) {
-								macros.add(":"+matcher.group(1));
-							}
-						}
-
-//						if (lowerLine.indexOf(".plugin") > -1){
-//						    Matcher matcher = Constants.PLUGIN_PATTERN.matcher(line);
-//
-//						    if (matcher.matches()){
-//						        String classname = matcher.group(1);
-//
-//						    }
-//						}
-
-						//FIXME, there is already a Pattern for this in Constants.
-						if (lowerLine.indexOf(".pseudocommand") > -1) {
-							Matcher matcher = Constants.PSEUDOCOMMAND_PATTERN_LINE.matcher(line);
-
-							if (matcher.matches()) {
-								String group = matcher.group(1);
-								group = Constants.BEGIN_BLOCK_PATTERN.matcher(group).replaceAll("").trim();
-								macros.add(":"+group);
-							}
-						}
-
-						if (lowerLine.indexOf(".var") > -1 || lowerLine.indexOf(".const") > -1) {
-							Pattern pattern = Constants.CONSTVAR_PATTERN;
-							Matcher matcher = pattern.matcher(line);
-
-							if (matcher.matches()) {
-								constig.add(matcher.group(2));
-							}
-						}
-
-						if (lowerLine.indexOf(".function") > -1) {
-							Pattern pattern = Constants.FUNCTION_PATTERN;
-							Matcher matcher = pattern.matcher(line);
-
-							if (matcher.find()) {
-								functions.add(matcher.group(1));
-							}
-						}
+            @Override
+            public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 
 
-						if (lowerLine.indexOf(".import") > -1) {
-							Pattern pattern = Constants.IMPORT_SOURCE_PATTERN;
-							Matcher matcher = pattern.matcher(line);
+                if (monitor == null){
+                    monitor = new NullProgressMonitor();
+                }
 
-							if (matcher.matches()) {
-								List<String> split = new ArrayList<String>();
-								split.addAll(Arrays.asList(ProjectPrefenceHelper.getSourceDirs(file.getProject())));
-								if (split.isEmpty()){
-									split.add(Constants.DEFAULT_SRC_DIRECTORY);
-								}
+                BufferedReader reader = null;
+                List<String> labels = new ArrayList<String>();
+                List<String> constig = new ArrayList<String>();
+                List<String> macros = new ArrayList<String>();
+                List<String> functions = new ArrayList<String>();
+             
+                try {
+                    reader = new BufferedReader(new InputStreamReader(file.getContents(true)),8192);
+                    String line = null;
+                    monitor.beginTask("Scanning file: " + file.getName(), 1);
+                    while ((line = reader.readLine()) != null){
 
-								split.addAll(Arrays.asList(ProjectPrefenceHelper.getLibDirs(file.getProject())));
-								split.add(file.getParent().getProjectRelativePath().toString());
-								for (int i = 0; i < split.size(); i++ ){
-									String folder = split.get(i);
-									if (!"".equals(folder)){
-										IPath importPath = file.getProject().getFolder(folder).getProjectRelativePath().append(matcher.group(1));
-										IFile importedFile = file.getProject().getFile(importPath);
-										if (importedFile.exists()){
-											imports.add(importPath.toString());
-										}
-									}
+                        if(monitor.isCanceled())
+                            throw new OperationCanceledException();
 
-								}
-							}
-						}
+                        String lowerLine = line.toLowerCase();
+                        if (line.indexOf(":") > -1 || lowerLine.indexOf(".label") > -1){
+                            Matcher matcher = Patterns.LABEL_PATTERN.matcher(line);
+                            if (matcher.matches()){
+                                String group = matcher.group(1);
+                                group = Patterns.SPACES_EQUALS_SIGN_SPACES.matcher(group).replaceAll("");
+                                labels.add(group);
+                            } else {
+                                matcher =  Patterns.LABEL_PATTERN_ALT.matcher(line);
+                                if (matcher.find()){
+                                    labels.add(matcher.group(1));
+                                }
+                            }
+                        }
 
-					}
+                        if (lowerLine.indexOf(".macro") > -1) {
+                            Matcher matcher = Patterns.MACRO_PATTERN.matcher(line);
 
-					Collections.sort(labels);
-					Collections.sort(macros);
-					Collections.sort(constig);
-					Collections.sort(functions);
+                            if (matcher.find()) {
+                                macros.add(":"+matcher.group(1));
+                            }
+                        }
 
-					synchronized (file) {
-						file.setSessionProperty(Constants.LABELS_SESSION_KEY, labels);
-						file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
-						file.setSessionProperty(Constants.CONST_SESSION_KEY, constig);
-						file.setSessionProperty(Constants.FUNCTIONS_SESSION_KEY, functions);
-						file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
-					}
+                        //						if (lowerLine.indexOf(".plugin") > -1){
+                        //						    Matcher matcher = Patterns.PLUGIN_PATTERN.matcher(line);
+                        //
+                        //						    if (matcher.matches()){
+                        //						        String classname = matcher.group(1);
+                        //
+                        //						    }
+                        //						}
 
-					monitor.worked(1);
+                        if (lowerLine.indexOf(".pseudocommand") > -1) {
+                            Matcher matcher = Patterns.PSEUDOCOMMAND_PATTERN_LINE.matcher(line);
 
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if (reader != null){
-						try {
-							reader.close();
-						} catch (IOException e) {
-						}
-					}
-					monitor.done();
-				}
+                            if (matcher.matches()) {
+                                String group = matcher.group(1);
+                                group = Patterns.BEGIN_BLOCK_PATTERN.matcher(group).replaceAll("").trim();
+                                macros.add(":"+group);
+                            }
+                        }
 
-				return Status.OK_STATUS;
-			}
-		};
+                        if (lowerLine.indexOf(".var") > -1 || lowerLine.indexOf(".const") > -1) {
+                            Matcher matcher = Patterns.CONSTVAR_PATTERN.matcher(line);
 
-		//scanFileJob.setRule(file.getProject());
-		scanFileJob.setPriority(Job.SHORT);
+                            if (matcher.matches()) {
+                                constig.add(matcher.group(2));
+                            }
+                        }
 
-		scanFileJob.schedule();
-	}
+                        if (lowerLine.indexOf(".function") > -1) {
 
-	public void init() {
+                            Matcher matcher = Patterns.FUNCTION_PATTERN.matcher(line);
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		try {
-			workspace.getRoot().accept(this);
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+                            if (matcher.find()) {
+                                functions.add(matcher.group(1));
+                            }
+                        }
 
-	}
+                        if (lowerLine.indexOf(".import") > -1 ){
+                            Matcher matcher = Patterns.IMPORT_SOURCE_PATTERN.matcher(line);
+                            if (matcher.matches()) {
+                                addImport(matcher.group(1));
+                            } 
+                        } else if (lowerLine.indexOf("#importif") > -1 ){
+                            Matcher matcher = Patterns.IMPORTIF_PATTERN.matcher(line);
+                            if (matcher.matches()) {
+                                addImport(matcher.group(matcher.groupCount()));
+                            } 
+                        } else if (lowerLine.indexOf("#import") > -1 ) {
+                            Matcher matcher = Patterns.IMPORT_PATTERN.matcher(line);
+                            if (matcher.matches()) {
+                                addImport(matcher.group(1));
+                            }
+                        }
 
-	public boolean visit(IResource resource) throws CoreException {
+                    }
 
-		if (resource.getType() == IResource.ROOT){
-			return true;
-		}
+                    Collections.sort(labels);
+                    Collections.sort(macros);
+                    Collections.sort(constig);
+                    Collections.sort(functions);
 
-		if (resource.getProject() == null
-				|| resource.isVirtual()
-				|| !resource.getProject().isAccessible()
-				|| !resource.getProject().hasNature(Constants.NATURE_ID)){
+                    synchronized (file) {
+                        file.setSessionProperty(Constants.LABELS_SESSION_KEY, labels);
+                        file.setSessionProperty(Constants.MACROS_SESSION_KEY, macros);
+                        file.setSessionProperty(Constants.CONST_SESSION_KEY, constig);
+                        file.setSessionProperty(Constants.FUNCTIONS_SESSION_KEY, functions);
+                        file.setSessionProperty(Constants.IMPORTS_SESSION_KEY, imports);
+                    }
 
-			return false;
-		}
+                    monitor.worked(1);
 
-		if (resource.getType() == IResource.PROJECT){
-			IProject project = (IProject) resource;
-			return project.isOpen();
-		}
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null){
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                        }
+                    }
+                    monitor.done();
+                }
 
-		if (resource.getType() == IResource.FOLDER){
+                return Status.OK_STATUS;
+            }
 
-			IFolder folder = (IFolder) resource;
-			return folder.findMember(".no_kickass_scan") == null;
-		}
+            protected void addImport(String filename) {
+                
+                if (searchpaths == null) {
+                    searchpaths = initSearchPaths();
+                }
+            
+                for (int i = 0; i < searchpaths.size(); i++ ){
+                    String folder = searchpaths.get(i);
+                    if (!"".equals(folder)){
+                        IPath importPath = file.getProject().getFolder(folder).getProjectRelativePath().append(filename);
+                        IFile importedFile = file.getProject().getFile(importPath);
+                        if (importedFile.exists()){
+                            imports.add(importPath.toString());
+                        }
+                    }
 
-		if (resource.getType() == IResource.FILE){
-			IFile file = (IFile) resource;
-			boolean kickassScan = true;
-			IResource res = file.getParent();
-			while (kickassScan && res != null && res.getType() == IResource.FOLDER){
-				kickassScan &= ((IFolder) res).findMember(".no_kickass_scan") == null;
-				res = res.getParent();
-			}
+                }
+            }
 
-			String ext = file.getFileExtension();
-			if (kickassScan && ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
-				String project = resource.getProject().getName();
-				scanfile(file, project);
-			}
-		}
+            private List<String> initSearchPaths() {
 
-		return resource.getType() == IResource.ROOT;
-	}
+                List<String> searchpaths = new ArrayList<String>();
+                searchpaths.addAll(Arrays.asList(ProjectPrefenceHelper.getSourceDirs(file.getProject())));
+                if (searchpaths.isEmpty()){
+                    searchpaths.add(Constants.DEFAULT_SRC_DIRECTORY);
+                }
+
+                searchpaths.addAll(Arrays.asList(ProjectPrefenceHelper.getLibDirs(file.getProject())));
+                searchpaths.add(file.getParent().getProjectRelativePath().toString());
+                return searchpaths;
+            }
+        };
+
+        //scanFileJob.setRule(file.getProject());
+        scanFileJob.setPriority(Job.SHORT);
+
+        scanFileJob.schedule();
+    }
+
+    public void init() {
+
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        try {
+            workspace.getRoot().accept(this);
+        } catch (CoreException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public boolean visit(IResource resource) throws CoreException {
+
+        if (resource.getType() == IResource.ROOT){
+            return true;
+        }
+
+        if (resource.getProject() == null
+                || resource.isVirtual()
+                || !resource.getProject().isAccessible()
+                || !resource.getProject().hasNature(Constants.NATURE_ID)){
+
+            return false;
+        }
+
+        if (resource.getType() == IResource.PROJECT){
+            IProject project = (IProject) resource;
+            return project.isOpen();
+        }
+
+        if (resource.getType() == IResource.FOLDER){
+
+            IFolder folder = (IFolder) resource;
+            return folder.findMember(".no_kickass_scan") == null;
+        }
+
+        if (resource.getType() == IResource.FILE){
+            IFile file = (IFile) resource;
+            boolean kickassScan = true;
+            IResource res = file.getParent();
+            while (kickassScan && res != null && res.getType() == IResource.FOLDER){
+                kickassScan &= ((IFolder) res).findMember(".no_kickass_scan") == null;
+                res = res.getParent();
+            }
+
+            String ext = file.getFileExtension();
+            if (kickassScan && ext != null && Patterns.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
+                String project = resource.getProject().getName();
+                scanfile(file, project);
+            }
+        }
+
+        return resource.getType() == IResource.ROOT;
+    }
 
 
 }

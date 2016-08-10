@@ -181,13 +181,20 @@
 <segment field=".label" description="" />
 <segment field=".enum" description="" />
 <segment field=".filenamespace" description="" />
-<segment field=".namespace" description="" />                                                                                                    
-~                                              
+<segment field=".namespace" description="" />
+<segment field="#if" description="" />
+<segment field="#endif" description="" />
+<segment field="#define" description="" />
+<segment field="#undef" description="" />
+<segment field="#import" description="" />
+<segment field="#importif" description="" />
+<segment field="#importonce" description="" />
+                                            
   
 <class field="List" description="" />
 <class field="Hashtable" description="" />
 <class field="Matrix" description="" />
-<class field="RotataionMatrix" description="" />
+<class field="RotationMatrix" description="" />
 <class field="ScaleMatrix" description="" />
 <class field="MoveMatrix" description="" />
 <class field="PerspectiveMatrix" description="" />

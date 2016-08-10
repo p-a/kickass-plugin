@@ -48,6 +48,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.lyllo.kickassplugin.Activator;
 import org.lyllo.kickassplugin.Constants;
 import org.lyllo.kickassplugin.Messages;
+import org.lyllo.kickassplugin.Patterns;
 
 
 /**
@@ -269,7 +270,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 			List<String> cleanLabels = new ArrayList<String>();
 			{
 
-				Pattern p = Constants.EQUALS_PATTERN;
+				Pattern p = Patterns.EQUALS_PATTERN;
 				for (String s: list){
 					cleanLabels.add(p.matcher(s).replaceAll(""));
 				}
@@ -507,7 +508,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						stringLineLower = stringLine.toLowerCase();
 
 						if (stringLineLower.contains(".const") || stringLineLower.contains(".var")) {
-							pattern = Constants.CONSTVAR_PATTERN;
+							pattern = Patterns.CONSTVAR_PATTERN;
 							matcher = pattern.matcher(stringLine);
 							
 							if (matcher.matches()){
@@ -519,7 +520,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 						
 						if (stringLineLower.indexOf(".function") > -1) {
-							pattern = Constants.FUNCTION_PATTERN;
+							pattern = Patterns.FUNCTION_PATTERN;
 							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
@@ -531,7 +532,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 
 						if (stringLineLower.indexOf(".macro") > -1) {
-							pattern = Constants.MACRO_PATTERN;
+							pattern = Patterns.MACRO_PATTERN;
 							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
@@ -542,7 +543,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 
 						if (stringLineLower.indexOf(".pseudocommand") > -1) {
-							pattern = Constants.PSEUDOCOMMAND_PATTERN;
+							pattern = Patterns.PSEUDOCOMMAND_PATTERN;
 							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
@@ -554,7 +555,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 
 						child = null;
 						if (stringLineLower.indexOf(".label") > -1) {
-							pattern = Constants.LABEL_PATTERN;
+							pattern = Patterns.LABEL_PATTERN;
 							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {
@@ -564,7 +565,7 @@ public class ASMContentOutlinePage extends ContentOutlinePage {
 						}
 
 						if (stringLineLower.indexOf(":") > -1) {
-							pattern = Constants.LABEL_PATTERN_ALT;
+							pattern = Patterns.LABEL_PATTERN_ALT;
 							matcher = pattern.matcher(stringLine);
 
 							if (matcher.find()) {

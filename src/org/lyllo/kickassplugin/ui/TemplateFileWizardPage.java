@@ -240,7 +240,7 @@ public class TemplateFileWizardPage extends WizardPage {
      * {@inheritDoc}
      */
     public Object[] getElements(Object inputElement) {
-      return ((java.util.List) inputElement).toArray();
+      return ((java.util.List<?>) inputElement).toArray();
     }
 
     /**

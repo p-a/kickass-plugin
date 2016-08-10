@@ -21,8 +21,6 @@
  */
 package org.lyllo.kickassplugin;
 
-import java.util.regex.Pattern;
-
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -277,29 +275,6 @@ public class Constants {
     public static final String PROJECT_PREFS_COMPILER_KEY = "org.lyllo.kickassplugin.project.compiler";
     public static final String PROJECT_PREFS_LOCAL_CONF_KEY = "org.lyllo.kickassplugin.project.localconf";
 
-
-	public final static Pattern EXTENSION_PATTERN_ALL = Pattern.compile("(asm|inc|sym|s)",Pattern.CASE_INSENSITIVE);
-	public final static Pattern EXTENSION_PATTERN_INCLUDES = Pattern.compile("(inc|sym)",Pattern.CASE_INSENSITIVE);
-	public final static Pattern EXTENSION_PATTERN_MAINFILES = Pattern.compile("(asm|s)",Pattern.CASE_INSENSITIVE);
-
-	public final static Pattern LABEL_PATTERN = Pattern.compile("\\A\\s*\\.label\\s+(\\w+\\s*=\\s*\\S+).*$", Pattern.CASE_INSENSITIVE);
-	public final static Pattern LABEL_PATTERN_ALT = Pattern.compile("\\A\\s*(\\w+):.*$", Pattern.CASE_INSENSITIVE);
-
-	public final static Pattern MACRO_PATTERN = Pattern.compile("^\\s*\\.macro\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
-
-	public final static Pattern PLUGIN_PATTERN = Pattern.compile("^\\s*\\.plugin\\s*\"(([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*)\".*$");
-
-	public final static Pattern PSEUDOCOMMAND_PATTERN = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)\\{?.*$", Pattern.CASE_INSENSITIVE);
-
-	public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\A\\s*\\.function\\s*(\\w+\\s*\\((\\w+\\s*,?\\s*)*\\)).*$", Pattern.CASE_INSENSITIVE);
-
-	public static final Pattern FILENAMESPACE_PATTERN = Pattern.compile("\\A\\s*.filenamespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
-	public static final Pattern NAMESPACE_PATTERN = Pattern.compile("\\A\\s*.namespace\\s+(\\w+).*$", Pattern.CASE_INSENSITIVE);
-
-	public final static Pattern SPACES_EQUALS_SIGN_SPACES = Pattern.compile("\\s*=\\s*\\S+");
-	public final static Pattern PSEUDOCOMMAND_PATTERN_LINE = Pattern.compile("^\\s*\\.pseudocommand\\s+(.*)$", Pattern.CASE_INSENSITIVE);
-	public final static Pattern BEGIN_BLOCK_PATTERN = Pattern.compile("\\{.*$");
-
 	public static final QualifiedName LABELS_SESSION_KEY = new QualifiedName("LABELS", "LABELS");
 	public static final QualifiedName MACROS_SESSION_KEY = new QualifiedName("MACROS", "MACROS");
 	public static final QualifiedName IMPORTS_SESSION_KEY = new QualifiedName("IMPORTS", "IMPORTS");
@@ -307,13 +282,5 @@ public class Constants {
 	public static final QualifiedName FUNCTIONS_SESSION_KEY = new QualifiedName("FUNCTIONS", "FUNCTIONS");
 
 	public static final QualifiedName NO_KICKASS_SCAN = new QualifiedName("NO_KICKASS_SCAN", "NO_KICKASS_SCAN");
-
-	protected static final Pattern IMPORT_SOURCE_PATTERN = Pattern.compile("^\\s*\\.import\\s+source\\s+\"(.*)\".*\\s?$", Pattern.CASE_INSENSITIVE);
-
-	public static final Pattern CONSTVAR_PATTERN = Pattern.compile("^\\s*\\.(const|var)\\s+(\\w+)(\\s*=\\s*\\S+)\\s*.*\\s?$",Pattern.CASE_INSENSITIVE);
-	public static final Pattern EQUALS_PATTERN = Pattern.compile("\\s*=.*");
-
-  
-
 
 }

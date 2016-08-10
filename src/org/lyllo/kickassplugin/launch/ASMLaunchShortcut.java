@@ -46,6 +46,7 @@ import org.eclipse.ui.IEditorPart;
 import org.lyllo.kickassplugin.Activator;
 import org.lyllo.kickassplugin.Constants;
 import org.lyllo.kickassplugin.Messages;
+import org.lyllo.kickassplugin.Patterns;
 import org.lyllo.kickassplugin.prefs.ProjectPrefenceHelper;
 
 
@@ -75,7 +76,7 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 			return;
 		}
 		IFile file = (IFile) firstSelection;
-		if (file.getFileExtension() == null || !Constants.EXTENSION_PATTERN_ALL.matcher(file.getFileExtension()).matches()){
+		if (file.getFileExtension() == null || !Patterns.EXTENSION_PATTERN_ALL.matcher(file.getFileExtension()).matches()){
 			Activator.getDefault().getLog().log(
 					new Status(Status.ERROR, Constants.PLUGIN_ID, Status.OK,
 							Messages.LAUNCH_ERROR, new FileNotFoundException("Selection does not have the right extension "  + file.getName())));
@@ -83,7 +84,7 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 			return;
 		}
 
-		if (Constants.EXTENSION_PATTERN_INCLUDES.matcher(file.getFileExtension()).matches()){
+		if (Patterns.EXTENSION_PATTERN_INCLUDES.matcher(file.getFileExtension()).matches()){
 			IContainer parent = file.getParent();
 			file = null;
 
@@ -91,7 +92,7 @@ public class ASMLaunchShortcut implements ILaunchShortcut {
 				IResource[] members = parent.members();
 				for (int i =0; i < members.length && file == null; i++){
 					if (members[i] instanceof IFile && members[i].getFileExtension() != null){
-						if (Constants.EXTENSION_PATTERN_MAINFILES.matcher(members[i].getFileExtension()).matches()){
+						if (Patterns.EXTENSION_PATTERN_MAINFILES.matcher(members[i].getFileExtension()).matches()){
 							file = (IFile) members[i];
 						}
 					}

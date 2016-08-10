@@ -165,9 +165,9 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
                     return false;
                 }
                 String ext = arg0.getFileExtension();
-                if (ext != null && Constants.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
+                if (ext != null && Patterns.EXTENSION_PATTERN_ALL.matcher(ext).matches()){
                     if (containsFilename((IFile) arg0, filename)){
-                        if (Constants.EXTENSION_PATTERN_MAINFILES.matcher(ext).matches()){
+                        if (Patterns.EXTENSION_PATTERN_MAINFILES.matcher(ext).matches()){
                             srcs.put(arg0.getRawLocation().toOSString(), (IFile)arg0);
                         } else {
                             getAllIncluders((IFile) arg0, new HashSet<String>(),srcs);
@@ -187,7 +187,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
             try {
                 while(!retval && (line = br.readLine()) != null){
                     if (line.toLowerCase().contains(".import")){
-                        Matcher matcher = Constants.IMPORT_SOURCE_PATTERN.matcher(line);
+                        Matcher matcher = Patterns.IMPORT_SOURCE_PATTERN.matcher(line);
                         retval = matcher.matches() && matcher.group(1).equalsIgnoreCase(filename2);
                     }
                 }
@@ -449,7 +449,7 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
                 }
 
                 String extension = resource.getFileExtension();
-                if (kickassScan && extension != null && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()){
+                if (kickassScan && extension != null && Patterns.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()){
                     compileFile(file);
                 }
             }
@@ -500,10 +500,10 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
                     }
 
                     String extension = resource.getFileExtension();
-                    if (kickassScan && (extension != null) && Constants.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()) {
+                    if (kickassScan && (extension != null) && Patterns.EXTENSION_PATTERN_MAINFILES.matcher(extension).matches()) {
                         if (!monitor.isCanceled())
                             compileFile((IFile) resource);
-                    } else if (kickassScan && extension != null && Constants.EXTENSION_PATTERN_INCLUDES.matcher(extension).matches()){
+                    } else if (kickassScan && extension != null && Patterns.EXTENSION_PATTERN_INCLUDES.matcher(extension).matches()){
 
                         Map<String,IFile>srcs = new HashMap<String, IFile>();
                         getAllIncluders((IFile)resource, new HashSet<String>(),srcs);
