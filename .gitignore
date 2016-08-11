@@ -1,1 +1,5 @@
 /bin
+test-output
+.classpath
+.project
+

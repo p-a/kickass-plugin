@@ -183,6 +183,7 @@
 <segment field=".filenamespace" description="" />
 <segment field=".namespace" description="" />
 <segment field="#if" description="" />
+<segment field="#else" description="" />
 <segment field="#endif" description="" />
 <segment field="#define" description="" />
 <segment field="#undef" description="" />
