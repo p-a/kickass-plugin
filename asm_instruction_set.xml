@@ -149,7 +149,6 @@
 <!-- kick assembler instructions -->   
 <segment field=".import" description="assembler directive imports and external file" />
 <segment field=".importonce" description="assembler directive imports and external file" />
-<segment field=".var" description="assembler directive " />
 <segment field=".return" description="assembler directive " />
 <segment field=".eval" description="assembler directive " />
 <segment field=".byte" description="assembler directive that defines bytes" />
@@ -160,11 +159,8 @@
 <segment field=".modify" description="" />
 <segment field=".filemodify" description="" />
 
-<segment field=".fill" description="assembler directive that defines bytes" />
+
 <segment field=".struct" description="assembler directive that defines the program instructions." />
-<segment field=".for" description="assembler directive that defines the memory model to use in the program." />
-<segment field=".print" description="assembler directive that defines the memory model to use in the program." />
-<segment field=".printnow" description="assembler directive that defines the memory model to use in the program." />
 <segment field=".function" description="assembler directive that defines the memory model to use in the program." />
 <segment field=".macro" description="assembler directive that defines the memory model to use in the program." />
 <segment field=".pseudocommand" description="macro definition" />
@@ -175,11 +171,6 @@
 <segment field=".pc" description="" />
 <segment field=".align" description="" />
 <segment field=".pseudopc" description="" />
-<segment field=".if" description="" />
-<segment field="else" description="" />
-<segment field=".const" description="" />
-<segment field=".label" description="" />
-<segment field=".enum" description="" />
 <segment field=".filenamespace" description="" />
 <segment field=".namespace" description="" />
 <segment field="#if" description="" />
@@ -190,7 +181,10 @@
 <segment field="#import" description="" />
 <segment field="#importif" description="" />
 <segment field="#importonce" description="" />
-                                            
+<segment field=".const" description="" />
+<segment field=".label" description="" />
+<segment field=".enum" description="" />
+<segment field=".var" description="assembler directive " />
   
 <class field="List" description="" />
 <class field="Hashtable" description="" />
@@ -208,6 +202,15 @@
 <function field="LoadPicture" description="" /> 
 <function field="LoadSid" description="" />
 <function field="createFile" description="" />
+
+<function field=".fill" description="assembler directive that defines bytes" />
+<function field=".for" description="assembler directive that defines the memory model to use in the program." />
+<function field=".print" description="assembler directive that defines the memory model to use in the program." />
+<function field=".printnow" description="assembler directive that defines the memory model to use in the program." />
+<function field=".if" description="" />
+<function field="else" description="" />
+
+
 
 <method field=".size" description="" />
 <method field=".remove" description="" />

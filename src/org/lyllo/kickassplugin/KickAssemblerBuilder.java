@@ -186,8 +186,15 @@ public class KickAssemblerBuilder extends IncrementalProjectBuilder {
             String line = null;
             try {
                 while(!retval && (line = br.readLine()) != null){
-                    if (line.toLowerCase().contains(".import")){
+                    line = line.toLowerCase();
+                    if (line.contains(".import")){
                         Matcher matcher = Patterns.IMPORT_SOURCE_PATTERN.matcher(line);
+                        retval = matcher.matches() && matcher.group(1).equalsIgnoreCase(filename2);
+                    } else if (line.contains("#importif")) {
+                        Matcher matcher = Patterns.IMPORTIF_PATTERN.matcher(line);
+                        retval = matcher.matches() && matcher.group(matcher.groupCount()).equalsIgnoreCase(filename2);
+                    } else if (line.contains("#import")) {
+                        Matcher matcher = Patterns.IMPORT_PATTERN.matcher(line);
                         retval = matcher.matches() && matcher.group(1).equalsIgnoreCase(filename2);
                     }
                 }

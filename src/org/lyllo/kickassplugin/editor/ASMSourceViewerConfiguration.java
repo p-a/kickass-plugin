@@ -37,7 +37,7 @@ import org.lyllo.kickassplugin.Constants;
 
 
 /**
- * Configurations for the ASMEditor. Provides sytax hightlighting.
+ * Configurations for the ASMEditor. Provides syntax highlighting.
  * 
  * @author Andy Reek
  * @since 15.11.2005
